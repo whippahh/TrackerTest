@@ -54,10 +54,35 @@
       <button class="chip" data-btfilter="elite"         onclick="setBtFilter('elite',this)">Elite</button>
       <button class="chip" data-btfilter="master"        onclick="setBtFilter('master',this)">Master</button>
       <button class="chip" data-btfilter="grandmaster"   onclick="setBtFilter('grandmaster',this)">GM</button>
+      <button class="chip chip-cankill" id="bt-cankill" onclick="toggleBtCanKill(this)" title="Only show bosses you currently meet the requirements for">⚔ Can Kill</button>
       <span class="bt-summary" id="bt-summary"></span>
     </div>
 
     <div class="boss-cards-grid" id="bt-grid"></div>
+
+    <!-- Boss Rotation Suggester -->
+    <div class="bt-rotation-wrap" id="bt-rotation-wrap">
+      <button class="bt-rotation-toggle" id="bt-rotation-toggle" onclick="toggleRotationPanel()">
+        ⚔ Boss Rotation Suggester <span class="bt-rotation-chevron" id="bt-rotation-chevron">▼</span>
+      </button>
+      <div class="bt-rotation-panel" id="bt-rotation-panel" style="display:none">
+        <div class="bt-rotation-controls">
+          <label class="bt-rotation-label">
+            <input type="checkbox" id="rot-cankill-only" onchange="renderRotation()" checked>
+            Only bosses I can kill
+          </label>
+          <label class="bt-rotation-label">
+            <input type="checkbox" id="rot-missing-only" onchange="renderRotation()" checked>
+            Only bosses with missing drops
+          </label>
+          <label class="bt-rotation-label">
+            <input type="checkbox" id="rot-started-only" onchange="renderRotation()">
+            Only bosses I've started
+          </label>
+        </div>
+        <div id="bt-rotation-body"></div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -82,6 +107,7 @@
 <button id="back-to-top" class="back-to-top" onclick="scrollToTop()" title="Back to top">&#9650;</button>
 
 <script src="data.js"></script>
+<script src="boss_data.js"></script>
 <script src="clog_data.js"></script>
 <script src="ca_data.js"></script>
 <script src="shared.js"></script>

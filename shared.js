@@ -116,6 +116,70 @@ function init() {
   renderPlanner();
   loadFilterFromURL();
   fetchGEPrices(); // non-blocking — fires and forgets, page works fine if it fails
+  buildBossDropLookup();
+}
+
+// ============================================================
+// BOSS ↔ CLOG SYNC
+// ============================================================
+
+// Maps item name (lowercase) → [{order, dropName}] for all boss drops.
+// Built once at init so sync lookups are O(1).
+var bossDropLookup = {}; // itemName_lower → [{order, dropName}]
+
+function buildBossDropLookup() {
+  bossDropLookup = {};
+  if (typeof BOSS_DATA === 'undefined') return;
+  SPINE_DATA.forEach(function(spine) {
+    if (spine.type !== 'Boss' && spine.entryType !== 'boss') return;
+    var rich = BOSS_DATA[spine.name];
+    if (!rich || !rich.drops) return;
+    rich.drops.forEach(function(drop) {
+      var key = drop.name.toLowerCase();
+      if (!bossDropLookup[key]) bossDropLookup[key] = [];
+      bossDropLookup[key].push({ order: spine.order, dropName: drop.name });
+    });
+  });
+}
+
+// Sync a boss drop state change → clog
+function syncDropToClog(dropName, obtained) {
+  if (typeof clogObtained === 'undefined') return;
+  var key = dropName.toLowerCase();
+  if (obtained) {
+    clogObtained[key] = true;
+  } else {
+    // Only clear from clog if no other boss source still has it obtained
+    var otherSources = (bossDropLookup[key] || []).some(function(entry) {
+      return !!obtainedDrops[entry.order + '-' + entry.dropName];
+    });
+    if (!otherSources) delete clogObtained[key];
+  }
+  saveClogObtained();
+}
+
+// Sync a clog item state change → boss drops
+function syncClogToBossDrops(itemName, obtained) {
+  var key = itemName.toLowerCase();
+  var entries = bossDropLookup[key] || [];
+  if (!entries.length) return;
+  entries.forEach(function(entry) {
+    var dropKey = entry.order + '-' + entry.dropName;
+    if (obtained) {
+      obtainedDrops[dropKey] = true;
+    } else {
+      delete obtainedDrops[dropKey];
+    }
+  });
+  if (entries.length) {
+    saveToStorage();
+    // Refresh boss cards if on bosses page
+    var bossGrid = document.getElementById('bt-grid');
+    if (bossGrid && bossGrid.children.length) {
+      var affectedOrders = [...new Set(entries.map(function(e) { return e.order; }))];
+      affectedOrders.forEach(function(order) { refreshBossCard(order); });
+    }
+  }
 }
 
 // ============================================================
@@ -126,10 +190,11 @@ function init() {
 // { 12922: { high: 1234567, low: 1200000 }, ... }
 window.GE_PRICES = null; // null = not yet fetched; {} = fetched but empty (error)
 
-// Collect every item ID referenced in SPINE_DATA notableDrops at runtime.
+// Collect every item ID from SPINE_DATA notableDrops and BOSS_DATA drops.
 // Returns a sorted array of unique positive integers.
 function collectSpineItemIds() {
   var ids = new Set();
+  // Legacy spine drop format: [name, rate, id]
   SPINE_DATA.forEach(function(item) {
     (item.notableDrops || []).forEach(function(drop) {
       if (drop.length > 2 && typeof drop[2] === 'number' && drop[2] > 0) {
@@ -137,46 +202,212 @@ function collectSpineItemIds() {
       }
     });
   });
+  // Rich BOSS_DATA drop format: { name, rate, id, qty, gphr }
+  if (typeof BOSS_DATA !== 'undefined') {
+    Object.values(BOSS_DATA).forEach(function(boss) {
+      (boss.drops || []).forEach(function(drop) {
+        if (typeof drop.id === 'number' && drop.id > 0) {
+          ids.add(drop.id);
+        }
+      });
+    });
+  }
   return Array.from(ids).sort(function(a, b) { return a - b; });
 }
 
+var GE_CACHE_KEY = 'ps_ge_prices';
+var GE_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in ms
+
 async function fetchGEPrices() {
+  // Check localStorage cache first
+  try {
+    var cached = localStorage.getItem(GE_CACHE_KEY);
+    if (cached) {
+      var parsed = JSON.parse(cached);
+      if (parsed && parsed.ts && (Date.now() - parsed.ts) < GE_CACHE_TTL && parsed.data) {
+        window.GE_PRICES = parsed.data;
+        refreshGEPriceSurfaces();
+        return;
+      }
+    }
+  } catch(e) {}
+
   try {
     var ids = collectSpineItemIds();
     if (!ids.length) { window.GE_PRICES = {}; return; }
 
     var url = 'https://prices.runescape.wiki/api/v1/latest?id=' + ids.join(',');
     var resp = await fetch(url, {
-      headers: {
-        // Wiki API requires a User-Agent identifying the app
-        'User-Agent': 'ProgressScape/1.0 (progressscape.net; progression tracker)'
-      }
+      headers: { 'User-Agent': 'ProgressScape/1.0 (progressscape.net; progression tracker)' }
     });
     if (!resp.ok) { window.GE_PRICES = {}; return; }
 
     var json = await resp.json();
-    // Response: { "data": { "<itemId>": { "high": int, "highTime": int, "low": int, "lowTime": int } } }
     window.GE_PRICES = json.data || {};
 
-    // Prices just arrived — refresh any surfaces already visible
-    // Boss tracker: full re-render (cards need price injected)
-    var bossPage = document.getElementById('page-bosses');
-    if (bossPage && bossPage.classList.contains('active')) {
-      renderBossTracker();
-    }
-    // Detail modal: re-open same item so drop rows get prices
-    var detailOverlay = document.getElementById('detail-overlay');
-    if (detailOverlay && detailOverlay.classList.contains('open')) {
-      var titleEl = document.getElementById('detail-title');
-      if (titleEl) {
-        var currentItem = SPINE_DATA.find(function(d) { return d.name === titleEl.textContent; });
-        if (currentItem) openDetail(currentItem.order);
-      }
-    }
+    // Cache with timestamp
+    try {
+      localStorage.setItem(GE_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: window.GE_PRICES }));
+    } catch(e) {}
+
+    refreshGEPriceSurfaces();
   } catch (e) {
-    // Network failure, CORS block, malformed JSON — silently degrade
     window.GE_PRICES = {};
   }
+}
+
+function refreshGEPriceSurfaces() {
+  // Boss tracker: full re-render so cards get prices injected
+  var bossGrid = document.getElementById('bt-grid');
+  if (bossGrid && bossGrid.children.length) {
+    renderBossTracker();
+  }
+  // Detail modal: re-open same item so drop rows get prices
+  var detailOverlay = document.getElementById('detail-overlay');
+  if (detailOverlay && detailOverlay.classList.contains('open')) {
+    var titleEl = document.getElementById('detail-title');
+    if (titleEl) {
+      var currentItem = SPINE_DATA.find(function(d) { return d.name === titleEl.textContent; });
+      if (currentItem) openDetail(currentItem.order);
+    }
+  }
+}
+
+// ============================================================
+// GP/HR CALCULATION
+// ============================================================
+
+// Parses a drop rate string into a decimal probability.
+// Returns null if the rate cannot be meaningfully converted to a number
+// (e.g. point-based rewards, raid invocation weights, untradeable-only drops).
+function parseDropRate(rateStr) {
+  if (!rateStr) return null;
+  var s = String(rateStr).trim().toLowerCase();
+
+  // Guaranteed drops — count as 1/1
+  if (s === 'guaranteed' || s === 'always' || s === 'always (wave 12)' || s === '1/1') return 1;
+
+  // Explicitly unquantifiable — skip these from GP/hr
+  var skip = ['guaranteed', 'via unsired', 'invocation-weighted unique',
+              'rare', 'reward tier', 'kill all four awakened bosses',
+              'kill all 4 awakened', 'bought with spirit flakes',
+              '150 pts (each role)', '375 pts (each role)'];
+  for (var i = 0; i < skip.length; i++) {
+    if (s.indexOf(skip[i]) !== -1) return null;
+  }
+
+  // Strip leading ~ and trailing qualifiers like " per kill", " each", " per jad", " per run",
+  // " per blood moon kill", " unique", " eclipse moon" etc.
+  s = s.replace(/^~/, '').replace(/\s+(per\b.*|each.*|unique.*|eclipse.*|blood.*|blue.*)$/, '').trim();
+
+  // Standard fraction: 1/N or 1/N.N
+  var match = s.match(/^1\s*\/\s*([\d.]+)$/);
+  if (match) {
+    var denom = parseFloat(match[1]);
+    return denom > 0 ? 1 / denom : null;
+  }
+
+  return null;
+}
+
+// Calculates estimated GP/hr for a boss using live GE prices.
+// Returns null if prices aren't loaded, killsPerHour is unknown,
+// or no gphr-flagged drops have known prices.
+function calcBossGpHr(rich) {
+  if (!window.GE_PRICES || !rich.killsPerHour) return null;
+  var kph = rich.killsPerHour;
+  var drops = rich.drops || [];
+  var totalGpPerKill = 0;
+  var hasAnyPrice = false;
+
+  drops.forEach(function(drop) {
+    if (!drop.gphr || !drop.id) return;
+    var rate = parseDropRate(drop.rate);
+    if (rate === null) return;
+    var entry = window.GE_PRICES[String(drop.id)];
+    if (!entry || !entry.high) return;
+    var qty = (typeof drop.qty === 'number' && drop.qty > 0) ? drop.qty : 1;
+    totalGpPerKill += rate * qty * entry.high;
+    hasAnyPrice = true;
+  });
+
+  if (!hasAnyPrice) return null;
+  return Math.round(totalGpPerKill * kph);
+}
+
+// Formats a raw GP/hr number for display.
+function fmtGpHr(gp) {
+  if (!gp || gp <= 0) return null;
+  if (gp >= 1000000) return (gp / 1000000).toFixed(1).replace(/\.0$/, '') + 'M gp/hr';
+  if (gp >= 1000)    return Math.round(gp / 1000) + 'K gp/hr';
+  return gp.toLocaleString() + ' gp/hr';
+}
+
+// ============================================================
+// DRY TRACKER
+// ============================================================
+
+// P(at least 1 drop in kc kills) using geometric distribution.
+// Returns 0–1. E.g. 0.69 means 69% of players would have it by now.
+function dropProbability(rate, kc) {
+  if (!rate || rate <= 0 || kc <= 0) return 0;
+  return 1 - Math.pow(1 - rate, kc);
+}
+
+// Returns dry tracker data for a single drop given current KC.
+// { pct: 0-100, label: string, severity: 'lucky'|'normal'|'dry'|'very-dry' }
+function getDryInfo(drop, kc) {
+  if (!kc || kc <= 0) return null;
+  var rate = parseDropRate(drop.rate);
+  if (!rate || rate >= 1) return null; // skip guaranteed/unparseable
+  var prob = dropProbability(rate, kc);
+  var pct = Math.round(prob * 100);
+  var severity;
+  if (prob >= 0.75)      severity = 'very-dry';  // in the driest 25%
+  else if (prob >= 0.50) severity = 'dry';        // below median
+  else if (prob >= 0.25) severity = 'normal';     // above median, not exceptional
+  else                   severity = 'lucky';       // top 25%, very lucky to not have it yet? No — invert:
+  // Actually: high prob = expected to have it = if you DON'T have it = dry.
+  // prob = chance of HAVING it. So high prob without the drop = very dry.
+  // Severity labels from player perspective (not having the drop):
+  //   prob < 0.25 → lucky (few would have it, totally fine)
+  //   prob 0.25–0.50 → normal
+  //   prob 0.50–0.75 → dry (more than half would have it by now)
+  //   prob > 0.75 → very dry
+  return { pct: pct, prob: prob, severity: severity };
+}
+
+// Returns the single driest un-obtained drop for a boss at current KC.
+// Used for the card-level dry summary.
+function getDriestDrop(drops, obtainedDrops, bossOrder, kc) {
+  if (!kc || kc <= 0) return null;
+  var worst = null;
+  drops.forEach(function(drop) {
+    var dropKey = bossOrder + '-' + drop.name;
+    if (obtainedDrops[dropKey]) return;
+    var info = getDryInfo(drop, kc);
+    if (!info) return;
+    if (!worst || info.prob > worst.prob) {
+      worst = { drop: drop, info: info };
+    }
+  });
+  return worst;
+}
+
+// Expected kills to obtain all drops (un-obtained ones for 'remaining').
+// Returns { remaining: N, total: N, drops: [{name, expected, obtained}] }
+function calcAvgKillsToCompletion(drops, obtainedDrops, bossOrder) {
+  var result = { remaining: 0, total: 0, drops: [] };
+  drops.forEach(function(drop) {
+    var rate = parseDropRate(drop.rate);
+    if (!rate || rate >= 1) return;
+    var expected = Math.round(1 / rate);
+    var obtained = !!obtainedDrops[bossOrder + '-' + drop.name];
+    result.total += expected;
+    result.drops.push({ name: drop.name, expected: expected, obtained: obtained });
+    if (!obtained) result.remaining += expected;
+  });
+  return result;
 }
 
 // Returns a formatted price string for an item ID, or null if unavailable.
@@ -280,7 +511,7 @@ function getActiveData() {
     const key = `${imEntry.name}-${imEntry.type}`;
     if (seen.has(key)) return;
     seen.add(key);
-    result.push({ ...spine, imOrder: imEntry.imOrder, imType: imEntry.type, _spineOrder: spine.order, order: idx + 1 });
+    result.push({ ...spine, imOrder: imEntry.imOrder, imType: imEntry.type, order: idx + 1 });
   });
   return result;
 }
@@ -763,8 +994,7 @@ function buildRowHtml(item) {
 
   const displayOrder = ironmanMode ? (item.imOrder || item.order) : item.order;
 
-  const detailOrder = item._spineOrder || item.order;
-  return `<tr class="${rowClass}" data-order="${detailOrder}" onclick="openDetail(${detailOrder})">
+  return `<tr class="${rowClass}" data-order="${item.order}" onclick="openDetail(${item.order})">
     <td>
       <div class="check-cell" onclick="event.stopPropagation(); toggleDone(${item.order})">
         <div class="check-box ${done ? 'checked' : ''}"></div>
@@ -900,16 +1130,37 @@ function openDetail(order) {
   const hasStats = Object.keys(playerStats).length > 0;
   const rows = [];
   rows.push(['Order', `#${item.order}`]);
-  if (item.location) rows.push(['Location', item.location]);
+  if (item.location && item.type !== 'Boss') rows.push(['Location', item.location]);
   if (item.qp > 0) rows.push(['Quest Points', `<span class="qp-badge">${item.qp} QP</span>`]);
   if (item.type === 'Boss') {
     const currentKC = bossKC[item.order] || 0;
+    // Rich data fields
+    var richModal = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[item.name] : null;
+    if (richModal) {
+      if (richModal.location) rows.push(['Location', richModal.location + (richModal.instanced ? ' <span style="font-size:0.72rem;color:var(--text-muted)">(instanced)</span>' : '') + (richModal.wilderness ? ' <span style="font-size:0.72rem;color:#e06060">⚠ Wilderness</span>' : '')]);
+      if (richModal.weakness) rows.push(['Weakness', richModal.weakness]);
+      if (richModal.combatLevel) rows.push(['Combat Level', richModal.combatLevel]);
+      if (richModal.killsPerHour) rows.push(['Kills / hr', '~' + richModal.killsPerHour + ' (avg)']);
+      var gphrModal = calcBossGpHr(richModal);
+      if (gphrModal) rows.push(['Est. GP/hr', '<span style="color:var(--gold-dark)">' + fmtGpHr(gphrModal) + '</span> <span style="font-size:0.72rem;color:var(--text-muted)">(unique drops only)</span>']);
+    } else if (item.location) {
+      rows.push(['Location', item.location]);
+    }
     rows.push(['Kill Count', `<div style="display:flex;align-items:center;gap:0.75rem">
       <input type="number" min="0" id="kc-input-${item.order}" value="${currentKC}"
         style="background:var(--stone);border:1px solid var(--stone-lighter);border-radius:3px;color:var(--gold);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;padding:0.3rem 0.6rem;width:90px;outline:none;text-align:center"
         onchange="updateKC(${item.order}, this.value)" oninput="updateKC(${item.order}, this.value)">
       <span style="font-size:0.8rem;color:var(--text-muted)">kills logged</span>
     </div>`]);
+    if (richModal && richModal.petName && richModal.petRate) {
+      var petRateModal = parseDropRate(richModal.petRate);
+      if (petRateModal && currentKC > 0) {
+        var petPctModal = Math.round(dropProbability(petRateModal, currentKC) * 100);
+        rows.push(['Pet Chance', richModal.petName + ' — <strong>' + petPctModal + '%</strong> chance at ' + currentKC + ' KC <span style="font-size:0.72rem;color:var(--text-muted)">(' + richModal.petRate + ')</span>']);
+      } else if (petRateModal) {
+        rows.push(['Pet', richModal.petName + ' <span style="font-size:0.72rem;color:var(--text-muted)">(' + richModal.petRate + ')</span>']);
+      }
+    }
   }
   if (item.skillReqs) {
     const reqs = parseSkillReqs(item.skillReqs);
@@ -933,8 +1184,13 @@ function openDetail(order) {
     rows.push(['Quest Prereqs', html]);
   }
   if (item.info) rows.push(['Notes', `<span style="font-family:'IM Fell English',serif;font-style:italic">${item.info}</span>`]);
-  if (item.notableDrops && item.notableDrops.length > 0) {
-    const dropsHtml = item.notableDrops.map(([dropName, dropRate, itemId]) => {
+  if (item.notableDrops && item.notableDrops.length > 0 || (typeof BOSS_DATA !== 'undefined' && BOSS_DATA[item.name] && BOSS_DATA[item.name].drops && BOSS_DATA[item.name].drops.length > 0)) {
+    var rich = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[item.name] : null;
+    var modalDrops = rich && rich.drops && rich.drops.length
+      ? rich.drops
+      : (item.notableDrops || []).map(function(d) { return { name: d[0], rate: d[1], id: d[2] || null }; });
+    const dropsHtml = modalDrops.map(function(drop) {
+      var dropName = drop.name, dropRate = drop.rate, itemId = drop.id;
       const dropKey = `${item.order}-${dropName}`;
       const mainEntry = SPINE_DATA.find(d => d.order !== item.order && d.name.toLowerCase() === dropName.toLowerCase());
       const dropDone = !!obtainedDrops[dropKey];
@@ -942,6 +1198,15 @@ function openDetail(order) {
       const priceHtml = price
         ? `<span style="font-size:0.72rem;color:var(--gold-dark);white-space:nowrap;margin-left:0.25rem" title="GE price (instant buy)">${price}</span>`
         : '';
+      // Dry info in modal
+      var dryStr = '';
+      if (!dropDone && (bossKC[item.order] || 0) > 0) {
+        var dryInfo = getDryInfo(drop, bossKC[item.order]);
+        if (dryInfo && dryInfo.prob >= 0.25) {
+          var dryCol = dryInfo.severity === 'very-dry' ? '#c84040' : dryInfo.severity === 'dry' ? '#c8903a' : '#a0a060';
+          dryStr = `<span style="font-size:0.68rem;color:${dryCol};margin-left:0.25rem" title="${dryInfo.pct}% of players would have this by now">${dryInfo.pct}%</span>`;
+        }
+      }
       return `<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.35rem;padding:0.3rem 0.5rem;background:rgba(0,0,0,0.2);border-radius:3px">
         <div class="check-box ${dropDone ? 'checked' : ''}" style="width:14px;height:14px;flex-shrink:0"
           onclick="toggleDropDone('${dropKey}', ${item.order}, ${mainEntry ? mainEntry.order : 'null'})" title="Mark obtained"></div>
@@ -950,10 +1215,26 @@ function openDetail(order) {
           ${dropName}${mainEntry ? ' <span style="color:var(--gold-dark);font-size:0.7rem">→</span>' : ''}
         </span>
         <span style="font-size:0.73rem;color:var(--stone-lighter);white-space:nowrap">${dropRate}</span>
-        ${priceHtml}
+        ${dryStr}${priceHtml}
       </div>`;
     }).join('');
     rows.push(['Notable Drops', dropsHtml]);
+
+    // Avg kills to completion
+    var completion = calcAvgKillsToCompletion(modalDrops, obtainedDrops, item.order);
+    if (completion.total > 0) {
+      var completionHtml = '';
+      if (completion.remaining === 0) {
+        completionHtml = '<span style="color:var(--green-light)">✓ All drops obtained</span>';
+      } else {
+        completionHtml = '<span style="color:var(--text-light);font-weight:600">~' + completion.remaining.toLocaleString() + '</span>' +
+          ' <span style="color:var(--text-muted);font-size:0.78rem">avg kills remaining</span>';
+        if (completion.remaining !== completion.total) {
+          completionHtml += ' <span style="color:var(--text-muted);font-size:0.75rem">(' + completion.total.toLocaleString() + ' from scratch)</span>';
+        }
+      }
+      rows.push(['Avg to Complete', completionHtml]);
+    }
   }
   // Combat Achievements section in modal
   if (item.type === 'Boss' || item.entryType === 'boss') {
@@ -992,6 +1273,7 @@ function openDetail(order) {
     <button class="btn" onclick="toggleDone(${item.order}); closeDetailBtn()">${done ? '✗ Mark Incomplete' : '✓ Mark Complete'}</button>
     <button class="btn btn-ghost" onclick="buildPathTo(${item.order})" title="Recursively find all incomplete prerequisites and add them to Custom Path" style="border-color:#4a7fc8;color:#8abcf8">🗺 Build Path</button>
     <button class="btn btn-ghost" onclick="showDownstreamTree(${item.order})" title="See what completing this opens up" style="border-color:rgba(200,168,75,0.35);color:var(--gold-dark)">⚔ Opens The Way</button>
+    ${item.type === 'Boss' ? `<button class="btn btn-ghost" onclick="generateBossCard(${item.order})" title="Download a shareable image of your boss progress" style="border-color:rgba(180,140,60,0.35);color:var(--gold-dark)">📤 Share Card</button>` : ''}
     ${item.source ? `<a href="${item.source}" target="_blank"><button class="btn btn-ghost">Open Guide ↗</button></a>` : ''}
   `;
   document.getElementById('detail-overlay').classList.add('open');
@@ -1002,22 +1284,246 @@ function updateKC(order, value) {
   saveToStorage();
 }
 
+// ============================================================
+// SHAREABLE BOSS CARD
+// ============================================================
+function generateBossCard(order) {
+  var spine = SPINE_DATA.find(function(d) { return d.order === order; });
+  if (!spine) return;
+  var rich = getBossRichData(spine);
+  var kc = bossKC[order] || 0;
+  var drops = rich.drops || [];
+
+  var W = 520, H = 300;
+  var canvas = document.createElement('canvas');
+  canvas.width = W * 2; canvas.height = H * 2; // 2x for retina
+  var ctx = canvas.getContext('2d');
+  ctx.scale(2, 2);
+
+  // Background
+  ctx.fillStyle = '#1a1610';
+  ctx.fillRect(0, 0, W, H);
+
+  // Gold border
+  ctx.strokeStyle = '#7a6030';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(1, 1, W - 2, H - 2);
+
+  // Inner accent line
+  ctx.strokeStyle = 'rgba(122,96,48,0.3)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(6, 6, W - 12, H - 12);
+
+  // Header band
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(0, 0, W, 64);
+
+  // Boss name
+  ctx.fillStyle = '#c8a84a';
+  ctx.font = 'bold 20px "Georgia", serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(spine.name, 72, 28);
+
+  // Tier badge
+  if (spine.bossTier) {
+    var tierColors = { 'easy': '#1d9e75', 'medium': '#ba7517', 'hard': '#d85a30', 'elite': '#7f77dd', 'master': '#d4537e', 'grandmaster': '#e24b4a' };
+    var tc = (spine.bossTier || '').toLowerCase().replace(' tier','').trim();
+    ctx.fillStyle = tierColors[tc] || '#888';
+    ctx.font = '10px "Georgia", serif';
+    ctx.fillText(spine.bossTier.toUpperCase(), 72, 46);
+  }
+
+  // Weakness & location
+  ctx.fillStyle = 'rgba(200,180,120,0.6)';
+  ctx.font = '10px sans-serif';
+  var meta = [];
+  if (rich.weakness) meta.push('⚔ ' + rich.weakness);
+  if (rich.location) meta.push('📍 ' + rich.location);
+  if (meta.length) ctx.fillText(meta.join('   '), 72, 58);
+
+  // KC block
+  ctx.fillStyle = '#c8a84a';
+  ctx.font = 'bold 36px "Georgia", serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(kc.toLocaleString(), W - 16, 44);
+  ctx.fillStyle = 'rgba(200,168,75,0.5)';
+  ctx.font = '10px sans-serif';
+  ctx.fillText('KILL COUNT', W - 16, 58);
+
+  // Milestone badges
+  var MILESTONES = [100, 500, 1000, 5000];
+  var achieved = MILESTONES.filter(function(m) { return kc >= m; });
+  if (achieved.length) {
+    ctx.textAlign = 'right';
+    var badgeX = W - 16;
+    achieved.slice().reverse().forEach(function(m) {
+      var label = m >= 1000 ? (m/1000)+'K' : String(m);
+      var bw = ctx.measureText(label).width + 10;
+      ctx.fillStyle = 'rgba(122,96,48,0.4)';
+      ctx.beginPath();
+      ctx.roundRect(badgeX - bw, 62, bw, 14, 2);
+      ctx.fill();
+      ctx.fillStyle = '#c8a84a';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.fillText(label, badgeX - 5, 73);
+      badgeX -= bw + 4;
+    });
+  }
+
+  // Divider
+  ctx.strokeStyle = 'rgba(122,96,48,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(12, 70); ctx.lineTo(W - 12, 70); ctx.stroke();
+
+  // Drop rows
+  var doneDrops = 0, totalDrops = 0;
+  var dropY = 90;
+  var colW = (W - 30) / 2;
+
+  drops.forEach(function(drop, i) {
+    var rate = parseDropRate(drop.rate);
+    if (!rate || rate >= 1) return;
+    totalDrops++;
+    var obtained = !!obtainedDrops[order + '-' + drop.name];
+    if (obtained) doneDrops++;
+
+    var col = i % 2;
+    var x = 15 + col * (colW + 6);
+    var y = dropY + Math.floor(i / 2) * 22;
+    if (y > H - 55) return; // clip overflow
+
+    // Row bg
+    ctx.fillStyle = obtained ? 'rgba(42,80,42,0.3)' : 'rgba(0,0,0,0.2)';
+    ctx.fillRect(x, y - 12, colW, 18);
+
+    // Checkbox
+    ctx.strokeStyle = obtained ? '#5aae5a' : '#666';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x + 3, y - 10, 12, 12);
+    if (obtained) {
+      ctx.fillStyle = '#5aae5a';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('✓', x + 4, y);
+    }
+
+    // Drop name
+    ctx.fillStyle = obtained ? '#5aae5a' : '#c8c0a0';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'left';
+    var maxW = colW - 70;
+    var name = drop.name;
+    while (ctx.measureText(name).width > maxW && name.length > 4) name = name.slice(0, -1);
+    if (name !== drop.name) name += '…';
+    ctx.fillText(name, x + 18, y);
+
+    // Rate
+    ctx.fillStyle = 'rgba(180,160,100,0.6)';
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(drop.rate.replace(/\s+.*/,''), x + colW - 2, y);
+
+    // Dry indicator
+    if (!obtained && kc > 0 && rate) {
+      var prob = dropProbability(rate, kc);
+      if (prob >= 0.5) {
+        ctx.fillStyle = prob >= 0.75 ? '#c84040' : '#c8903a';
+        ctx.font = 'bold 8px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(Math.round(prob*100)+'%', x + colW - 32, y);
+      }
+    }
+  });
+
+  // Progress bar
+  var barY = H - 48;
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillRect(15, barY, W - 30, 6);
+  if (totalDrops > 0) {
+    var pct = doneDrops / totalDrops;
+    ctx.fillStyle = pct === 1 ? '#5aae5a' : '#c8a84a';
+    ctx.fillRect(15, barY, Math.round((W - 30) * pct), 6);
+  }
+  ctx.fillStyle = 'rgba(200,168,75,0.7)';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(doneDrops + ' / ' + totalDrops + ' drops obtained', 15, barY + 18);
+
+  // GP/hr
+  var gphr = calcBossGpHr(rich);
+  if (gphr) {
+    ctx.fillStyle = '#c8a84a';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtGpHr(gphr), W - 15, barY + 18);
+  }
+
+  // Footer
+  ctx.fillStyle = 'rgba(122,96,48,0.4)';
+  ctx.fillRect(0, H - 22, W, 22);
+  ctx.fillStyle = 'rgba(200,168,75,0.5)';
+  ctx.font = '9px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('progressscape.net', 12, H - 7);
+  ctx.textAlign = 'right';
+  ctx.fillText(new Date().toLocaleDateString(), W - 12, H - 7);
+
+  // Boss image (async — draw then re-export)
+  function exportCanvas() {
+    var link = document.createElement('a');
+    link.download = spine.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_progress.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  if (rich.image) {
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      // Draw boss image top-left of header
+      ctx.drawImage(img, 10, 8, 52, 52);
+      exportCanvas();
+    };
+    img.onerror = exportCanvas;
+    img.src = rich.image;
+  } else {
+    exportCanvas();
+  }
+}
+
 function toggleDropDone(dropKey, sourceOrder, mainEntryOrder) {
+  var obtained;
   if (obtainedDrops[dropKey]) {
     delete obtainedDrops[dropKey];
+    obtained = false;
   } else {
     obtainedDrops[dropKey] = true;
+    obtained = true;
   }
-  const item = SPINE_DATA.find(d => d.order === sourceOrder);
-  if (item && item.notableDrops && item.notableDrops.length > 0) {
-    const allDone = item.notableDrops.every(([dropName]) => !!obtainedDrops[`${sourceOrder}-${dropName}`]);
+
+  // Extract drop name from key (format: "order-dropName")
+  var dropName = dropKey.slice(dropKey.indexOf('-') + 1);
+
+  // Sync to clog
+  syncDropToClog(dropName, obtained);
+
+  // allDone check — use BOSS_DATA drops if available, fall back to notableDrops
+  var item = SPINE_DATA.find(function(d) { return d.order === sourceOrder; });
+  if (item) {
+    var rich = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[item.name] : null;
+    var drops = rich && rich.drops && rich.drops.length
+      ? rich.drops
+      : (item.notableDrops || []).map(function(d) { return { name: d[0] }; });
+    var allDone = drops.length > 0 && drops.every(function(d) {
+      return !!obtainedDrops[sourceOrder + '-' + d.name];
+    });
     if (allDone) completedSet.add(sourceOrder);
     else completedSet.delete(sourceOrder);
   }
+
   saveToStorage();
   renderTable();
   updateProgress();
-  // Refresh whichever surface triggered the toggle
   const bossPage = document.getElementById('page-bosses');
   if (bossPage && bossPage.classList.contains('active')) {
     refreshBossCard(sourceOrder);
@@ -3033,12 +3539,19 @@ function saveClogObtained() {
 
 function toggleClogItem(name) {
   var key = name.toLowerCase();
+  var obtained;
   if (clogObtained[key]) {
     delete clogObtained[key];
+    obtained = false;
   } else {
     clogObtained[key] = true;
+    obtained = true;
   }
   saveClogObtained();
+
+  // Sync to boss drops
+  syncClogToBossDrops(name, obtained);
+
   renderClogMain();
   renderClogSidebar();
   updateClogSummary();
@@ -3658,7 +4171,43 @@ function renderCompare() {
 // BOSS TRACKER
 // ============================================================
 
+// ── Boss rich data helper ────────────────────────────────────────
+// Merges SPINE_DATA stub with BOSS_DATA enrichment.
+// Returns a unified boss object with normalised drops:
+//   { name, rate, id, qty, gphr }
+function getBossRichData(spineItem) {
+  var rich = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[spineItem.name] : null;
+  var merged = Object.assign({}, spineItem);
+  if (rich) {
+    merged.image        = rich.image        || null;
+    merged.location     = rich.location     || spineItem.location || '';
+    merged.weakness     = rich.weakness     || null;
+    merged.combatLevel  = rich.combatLevel  || null;
+    merged.killsPerHour = rich.killsPerHour || null;
+    merged.petName      = rich.petName      || null;
+    merged.petRate      = rich.petRate      || null;
+    merged.instanced    = rich.instanced    != null ? rich.instanced    : null;
+    merged.wilderness   = rich.wilderness   != null ? rich.wilderness   : null;
+    merged.multiCombat  = rich.multiCombat  != null ? rich.multiCombat  : null;
+    merged.skillReqsParsed = rich.skillReqsParsed || {};
+    // Normalise drops to {name, rate, id, qty, gphr}
+    if (rich.drops && rich.drops.length) {
+      merged.drops = rich.drops;
+    } else {
+      merged.drops = (spineItem.notableDrops || []).map(function(d) {
+        return { name: d[0], rate: d[1], id: d[2] || null, qty: 1, gphr: true };
+      });
+    }
+  } else {
+    merged.drops = (spineItem.notableDrops || []).map(function(d) {
+      return { name: d[0], rate: d[1], id: d[2] || null, qty: 1, gphr: true };
+    });
+  }
+  return merged;
+}
+
 var btActiveFilter = 'all';
+var btCanKillOnly  = false;
 
 function setBtFilter(filter, el) {
   btActiveFilter = filter;
@@ -3668,6 +4217,49 @@ function setBtFilter(filter, el) {
   renderBossTracker();
 }
 
+function toggleBtCanKill(el) {
+  btCanKillOnly = !btCanKillOnly;
+  if (el) el.classList.toggle('active', btCanKillOnly);
+  renderBossTracker();
+}
+
+// Returns true if the player meets all skill + quest reqs for this boss.
+// Uses skillReqsParsed from BOSS_DATA (fast path), falls back to text parsing.
+// Returns null if no player stats are loaded.
+function bossCanKill(spineItem) {
+  var hasStats = Object.keys(playerStats).length > 0;
+  if (!hasStats) return null;
+
+  var rich = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[spineItem.name] : null;
+  var parsed = rich && rich.skillReqsParsed && Object.keys(rich.skillReqsParsed).length
+    ? rich.skillReqsParsed : null;
+
+  if (parsed) {
+    for (var skill in parsed) {
+      if ((playerStats[skill.toLowerCase()] || 1) < parsed[skill]) return false;
+    }
+  } else if (spineItem.skillReqs) {
+    var reqs = parseSkillReqs(spineItem.skillReqs);
+    for (var i = 0; i < reqs.length; i++) {
+      var req = reqs[i];
+      if (req.isQP) continue;
+      var key = req.skill.toLowerCase();
+      var have = key === 'combat' ? getCombatLevel() : (playerStats[key] || 1);
+      if (have < req.level) return false;
+    }
+  }
+
+  // Quest prereqs
+  if (spineItem.questPrereqs) {
+    var prereqs = spineItem.questPrereqs.split(';').map(function(s) { return s.trim(); }).filter(Boolean);
+    for (var j = 0; j < prereqs.length; j++) {
+      var found = SPINE_DATA.find(function(d) { return d.name.toLowerCase() === prereqs[j].toLowerCase(); });
+      if (found && !completedSet.has(found.order)) return false;
+    }
+  }
+  return true;
+}
+
 function renderBossTracker() {
   var grid = document.getElementById('bt-grid');
   var summaryEl = document.getElementById('bt-summary');
@@ -3675,6 +4267,7 @@ function renderBossTracker() {
 
   var search = (document.getElementById('bt-search') || {}).value || '';
   search = search.toLowerCase().trim();
+  var hasStats = Object.keys(playerStats).length > 0;
 
   var bosses = SPINE_DATA.filter(function(item) {
     if (item.type !== 'Boss' && item.entryType !== 'boss') return false;
@@ -3683,6 +4276,10 @@ function renderBossTracker() {
       if (tierClass !== btActiveFilter) return false;
     }
     if (search && item.name.toLowerCase().indexOf(search) === -1) return false;
+    if (btCanKillOnly) {
+      if (!hasStats) return false;
+      if (bossCanKill(item) !== true) return false;
+    }
     return true;
   });
 
@@ -3695,7 +4292,10 @@ function renderBossTracker() {
   }
 
   if (!bosses.length) {
-    grid.innerHTML = '<div class="bt-empty">No bosses match your filters.</div>';
+    var msg = (btCanKillOnly && !hasStats)
+      ? 'Look up a username first to use the Can Kill filter.'
+      : 'No bosses match your filters.';
+    grid.innerHTML = '<div class="bt-empty">' + msg + '</div>';
     return;
   }
 
@@ -3705,10 +4305,11 @@ function renderBossTracker() {
 }
 
 function buildBossCardHtml(boss) {
-  var drops = boss.notableDrops || [];
+  var rich = getBossRichData(boss);
+  var drops = rich.drops || [];
   var totalDrops = drops.length;
   var doneDrops = drops.filter(function(d) {
-    return !!obtainedDrops[boss.order + '-' + d[0]];
+    return !!obtainedDrops[boss.order + '-' + d.name];
   }).length;
   var allDone = totalDrops > 0 && doneDrops === totalDrops;
   var kc = bossKC[boss.order] || 0;
@@ -3718,7 +4319,15 @@ function buildBossCardHtml(boss) {
     ? '<span class="boss-tier tier-' + tierClass + '" style="font-size:0.68rem">' + boss.bossTier + '</span>'
     : '';
 
+  var imageHtml = rich.image
+    ? '<img class="bc-boss-img" src="' + rich.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+    : '';
+
   var cardClass = 'boss-card' + (allDone ? ' bc-all-done' : '');
+
+  // GP/hr estimate
+  var gphr = calcBossGpHr(rich);
+  var gphrHtml = gphr ? '<div class="bc-gphr">' + fmtGpHr(gphr) + '</div>' : '';
 
   var pct = totalDrops > 0 ? Math.round(doneDrops / totalDrops * 100) : 0;
   var progressHtml = totalDrops > 0
@@ -3732,19 +4341,67 @@ function buildBossCardHtml(boss) {
     : '';
 
   var dropsHtml = drops.map(function(drop) {
-    var dropName = drop[0], dropRate = drop[1], itemId = drop[2];
+    var dropName = drop.name, dropRate = drop.rate, itemId = drop.id;
     var dropKey = boss.order + '-' + dropName;
     var done = !!obtainedDrops[dropKey];
     var price = gePrice(itemId, 'short');
     var priceHtml = price ? '<span class="bc-drop-price">' + price + '</span>' : '';
+
+    // Dry indicator — only on un-obtained drops when KC is logged
+    var dryHtml = '';
+    if (!done && kc > 0) {
+      var dryInfo = getDryInfo(drop, kc);
+      if (dryInfo && dryInfo.prob >= 0.25) {
+        dryHtml = '<span class="bc-dry bc-dry-' + dryInfo.severity + '" title="' +
+          dryInfo.pct + '% of players would have this by now">' +
+          dryInfo.pct + '%</span>';
+      }
+    }
+
     return '<div class="bc-drop-row' + (done ? ' bc-drop-done' : '') + '"' +
       ' onclick="toggleDropDone(\'' + dropKey.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', ' + boss.order + ', null)">' +
       '<div class="bc-drop-check">' + (done ? '✓' : '') + '</div>' +
       '<span class="bc-drop-name" title="' + dropName.replace(/"/g, '&quot;') + '">' + dropName + '</span>' +
       '<span class="bc-drop-rate">' + dropRate + '</span>' +
+      dryHtml +
       priceHtml +
       '</div>';
   }).join('');
+
+  // Dry summary — show driest un-obtained drop at card level
+  var dryHtml = '';
+  if (kc > 0) {
+    var driest = getDriestDrop(drops, obtainedDrops, boss.order, kc);
+    if (driest && driest.info.prob >= 0.5) {
+      dryHtml = '<div class="bc-dry-summary bc-dry-' + driest.info.severity + '">' +
+        '🎲 ' + driest.info.pct + '% chance of <strong>' + driest.drop.name + '</strong> by now' +
+        '</div>';
+    }
+  }
+
+  // KC milestones
+  var MILESTONES = [100, 500, 1000, 5000];
+  var milestoneHtml = '';
+  if (kc > 0) {
+    milestoneHtml = MILESTONES.filter(function(m) { return kc >= m; }).map(function(m) {
+      return '<span class="bc-milestone" title="' + m + ' KC milestone">' + (m >= 1000 ? (m/1000)+'K' : m) + '</span>';
+    }).join('');
+  }
+
+  // Pet tracker
+  var petHtml = '';
+  if (kc > 0 && rich.petRate) {
+    var petRate = parseDropRate(rich.petRate);
+    if (petRate) {
+      var petProb = Math.round(dropProbability(petRate, kc) * 100);
+      var petName = rich.petName || 'Pet';
+      petHtml = '<div class="bc-pet-row" title="' + petName + ': ' + petProb + '% chance by ' + kc + ' KC">' +
+        '<span class="bc-pet-icon">🐾</span>' +
+        '<span class="bc-pet-name">' + petName + '</span>' +
+        '<span class="bc-pet-pct">' + petProb + '%</span>' +
+      '</div>';
+    }
+  }
 
   // CA row
   var caTasks = getCaTasksForBoss(boss.name);
@@ -3762,10 +4419,12 @@ function buildBossCardHtml(boss) {
 
   return '<div class="' + cardClass + '" id="bc-' + boss.order + '">' +
     '<div class="bc-header">' +
+      imageHtml +
       '<span class="bc-name" onclick="openDetail(' + boss.order + ')" title="Open details">' +
         boss.name + (tierHtml ? '&ensp;' + tierHtml : '') +
       '</span>' +
       '<div class="bc-kc-wrap">' +
+        (milestoneHtml ? '<div class="bc-milestones">' + milestoneHtml + '</div>' : '') +
         '<span class="bc-kc-label">KC</span>' +
         '<input class="bc-kc-input" type="number" min="0" value="' + kc + '"' +
           ' onchange="updateKC(' + boss.order + ', this.value)"' +
@@ -3773,8 +4432,11 @@ function buildBossCardHtml(boss) {
           ' onclick="event.stopPropagation()">' +
       '</div>' +
     '</div>' +
+    gphrHtml +
     progressHtml +
     (dropsHtml ? '<div class="bc-drops">' + dropsHtml + '</div>' : '') +
+    dryHtml +
+    petHtml +
     caRowHtml +
     '</div>';
 }
@@ -3787,7 +4449,6 @@ function refreshBossCard(order) {
   var tmp = document.createElement('div');
   tmp.innerHTML = buildBossCardHtml(boss);
   el.parentNode.replaceChild(tmp.firstChild, el);
-  // Update summary counts
   var summaryEl = document.getElementById('bt-summary');
   if (summaryEl) {
     var allBosses = SPINE_DATA.filter(function(i) { return i.type === 'Boss' || i.entryType === 'boss'; });
@@ -3798,6 +4459,187 @@ function refreshBossCard(order) {
       totalKC.toLocaleString() + ' total KC';
   }
 }
+
+// ============================================================
+// BOSS ROTATION SUGGESTER
+// ============================================================
+
+var btRotationOpen = false;
+
+function toggleRotationPanel() {
+  btRotationOpen = !btRotationOpen;
+  var panel = document.getElementById('bt-rotation-panel');
+  var chevron = document.getElementById('bt-rotation-chevron');
+  if (panel) panel.style.display = btRotationOpen ? 'block' : 'none';
+  if (chevron) chevron.textContent = btRotationOpen ? '▲' : '▼';
+  if (btRotationOpen) renderRotation();
+}
+
+function scoreRotation(spineItem, rich) {
+  var drops = rich.drops || [];
+  var kc = bossKC[spineItem.order] || 0;
+
+  // Count missing drops and their expected kill cost
+  var missingDrops = [];
+  var remainingExpected = 0;
+  var totalExpected = 0;
+  var totalDrops = 0;
+  var doneDrops = 0;
+
+  drops.forEach(function(drop) {
+    var rate = parseDropRate(drop.rate);
+    if (!rate || rate >= 1) return;
+    totalDrops++;
+    var expected = 1 / rate;
+    totalExpected += expected;
+    var obtained = !!obtainedDrops[spineItem.order + '-' + drop.name];
+    if (obtained) {
+      doneDrops++;
+    } else {
+      remainingExpected += expected;
+      missingDrops.push({ name: drop.name, rate: rate, expected: expected, id: drop.id });
+    }
+  });
+
+  if (totalDrops === 0) return null;
+
+  var completionPct = totalDrops > 0 ? doneDrops / totalDrops : 0;
+
+  // GP/hr (null if not calculable)
+  var gphr = calcBossGpHr(rich) || 0;
+
+  // Efficiency score: value density = GP/hr normalised + completion progress bonus
+  // We want bosses that are: high GP/hr, nearly complete, and have meaningful drops left
+  var efficiencyScore = gphr / 1000000; // normalise to millions
+  var completionBonus = completionPct * 3; // weight completion heavily
+  var kcBonus = kc > 0 ? 1 : 0; // already started
+  var score = efficiencyScore + completionBonus + kcBonus;
+
+  // Category
+  var category;
+  if (completionPct >= 0.5 && missingDrops.length > 0) {
+    category = 'priority'; // close to finishing
+  } else if (gphr > 0 && missingDrops.length > 0) {
+    category = 'efficiency'; // good GP with drops to get
+  } else if (kc === 0 && missingDrops.length > 0) {
+    category = 'unlock'; // never touched, drops available
+  } else {
+    category = 'other';
+  }
+
+  return {
+    spine: spineItem,
+    rich: rich,
+    kc: kc,
+    missingDrops: missingDrops,
+    doneDrops: doneDrops,
+    totalDrops: totalDrops,
+    completionPct: completionPct,
+    remainingExpected: remainingExpected,
+    gphr: gphr,
+    score: score,
+    category: category
+  };
+}
+
+function renderRotation() {
+  var body = document.getElementById('bt-rotation-body');
+  if (!body) return;
+
+  var canKillOnly  = document.getElementById('rot-cankill-only') && document.getElementById('rot-cankill-only').checked;
+  var missingOnly  = document.getElementById('rot-missing-only') && document.getElementById('rot-missing-only').checked;
+  var startedOnly  = document.getElementById('rot-started-only') && document.getElementById('rot-started-only').checked;
+  var hasStats     = Object.keys(playerStats).length > 0;
+
+  var allBosses = SPINE_DATA.filter(function(item) {
+    return item.type === 'Boss' || item.entryType === 'boss';
+  });
+
+  var scored = [];
+  allBosses.forEach(function(spine) {
+    var rich = getBossRichData(spine);
+    if (canKillOnly && hasStats && bossCanKill(spine) !== true) return;
+    if (startedOnly && (bossKC[spine.order] || 0) === 0) return;
+    var s = scoreRotation(spine, rich);
+    if (!s) return;
+    if (missingOnly && s.missingDrops.length === 0) return;
+    scored.push(s);
+  });
+
+  if (!scored.length) {
+    body.innerHTML = '<div class="rot-empty">' +
+      (canKillOnly && !hasStats ? 'Look up a username to personalise the rotation.' : 'No bosses match your filters.') +
+      '</div>';
+    return;
+  }
+
+  // Sort: priority first (nearly complete), then by score desc
+  var catOrder = { priority: 0, efficiency: 1, unlock: 2, other: 3 };
+  scored.sort(function(a, b) {
+    var catDiff = catOrder[a.category] - catOrder[b.category];
+    if (catDiff !== 0) return catDiff;
+    return b.score - a.score;
+  });
+
+  // Render — show top 15
+  var top = scored.slice(0, 15);
+
+  var catLabels = { priority: '🎯 Close to Completion', efficiency: '💰 Best Efficiency', unlock: '🔓 Not Yet Started', other: '' };
+  var lastCat = null;
+
+  var html = top.map(function(s) {
+    var catHtml = '';
+    if (s.category !== lastCat && catLabels[s.category]) {
+      catHtml = '<div class="rot-category-header">' + catLabels[s.category] + '</div>';
+      lastCat = s.category;
+    }
+
+    var pct = Math.round(s.completionPct * 100);
+    var tierClass = (s.spine.bossTier || '').toLowerCase().replace(' tier','').trim();
+
+    // Top 3 missing drops to show
+    var topMissing = s.missingDrops.slice(0, 3).map(function(d) {
+      var dryInfo = s.kc > 0 ? getDryInfo(d, s.kc) : null;
+      var dryHtml = dryInfo && dryInfo.prob >= 0.5
+        ? ' <span class="rot-dry rot-dry-' + dryInfo.severity + '">' + dryInfo.pct + '%</span>'
+        : '';
+      return '<span class="rot-drop">' + d.name + dryHtml + '</span>';
+    }).join('');
+    if (s.missingDrops.length > 3) topMissing += '<span class="rot-drop rot-drop-more">+' + (s.missingDrops.length - 3) + ' more</span>';
+
+    var gphrStr = s.gphr ? '<span class="rot-gphr">' + fmtGpHr(s.gphr) + '</span>' : '';
+    var kcStr = s.kc > 0 ? '<span class="rot-kc">' + s.kc.toLocaleString() + ' KC</span>' : '';
+    var expectedStr = s.remainingExpected > 0
+      ? '<span class="rot-expected">~' + Math.round(s.remainingExpected).toLocaleString() + ' kills to complete</span>'
+      : '';
+
+    return catHtml +
+      '<div class="rot-row" onclick="openDetail(' + s.spine.order + ')">' +
+        (s.rich.image ? '<img class="rot-img" src="' + s.rich.image + '" alt="" onerror="this.style.display=\'none\'">' : '<div class="rot-img-placeholder"></div>') +
+        '<div class="rot-info">' +
+          '<div class="rot-name">' +
+            '<span>' + s.spine.name + '</span>' +
+            '<span class="boss-tier tier-' + tierClass + '" style="font-size:0.65rem;margin-left:0.4rem">' + (s.spine.bossTier || '') + '</span>' +
+          '</div>' +
+          '<div class="rot-meta">' + kcStr + gphrStr + expectedStr + '</div>' +
+          '<div class="rot-drops">' + (topMissing || '<span class="rot-drop" style="color:var(--text-muted)">All drops obtained</span>') + '</div>' +
+        '</div>' +
+        '<div class="rot-bar-wrap">' +
+          '<div class="rot-bar"><div class="rot-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="rot-pct">' + pct + '%</span>' +
+        '</div>' +
+      '</div>';
+  }).join('');
+
+  body.innerHTML = html;
+}
+
+// Re-render rotation whenever KC changes (if panel is open)
+var _origUpdateKC = updateKC;
+updateKC = function(order, value) {
+  _origUpdateKC(order, value);
+  if (btRotationOpen) renderRotation();
+};
 
 // Hash-based page routing removed — each page is now a standalone HTML file.
 

@@ -269,6 +269,7 @@
   .chip.type-activity.active { background: rgba(26,58,107,0.2); border-color: var(--blue-light); color: #7ab0f0; }
   .chip.type-unlock.active { background: rgba(120,80,200,0.2); border-color: #8a50c8; color: #b080f0; }
   .chip.type-miniquest.active { background: rgba(180,120,30,0.2); border-color: #c89030; color: #e8b848; }
+  .chip.chip-cankill.active { background: rgba(42,107,42,0.2); border-color: var(--green-light); color: #6fc96f; }
 
   /* ===== SEARCH ===== */
   .search-row {
@@ -3203,6 +3204,83 @@
     gap: 0.5rem;
     margin-bottom: 0.65rem;
   }
+  .bc-boss-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .bc-gphr {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--gold-dark);
+    background: rgba(180,140,60,0.1);
+    border: 1px solid rgba(180,140,60,0.25);
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Dry tracker — per-drop indicator */
+  .bc-dry {
+    font-size: 0.65rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    border-radius: 2px;
+    padding: 0 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .bc-dry-normal  { color: #a0a060; }
+  .bc-dry-dry     { color: #c8903a; }
+  .bc-dry-very-dry { color: #c84040; }
+
+  /* Dry tracker — card-level summary */
+  .bc-dry-summary {
+    font-size: 0.75rem;
+    font-family: 'Source Sans 3', sans-serif;
+    padding: 0.3rem 0.5rem;
+    border-radius: 3px;
+    margin-top: 0.4rem;
+    line-height: 1.4;
+  }
+  .bc-dry-summary.bc-dry-dry      { background: rgba(200,144,58,0.12); color: #c8903a; border-left: 2px solid #c8903a; }
+  .bc-dry-summary.bc-dry-very-dry { background: rgba(200,64,64,0.12);  color: #c84040; border-left: 2px solid #c84040; }
+  .bc-dry-summary strong { font-weight: 600; }
+
+  /* KC milestones */
+  .bc-milestones { display: flex; gap: 2px; align-items: center; }
+  .bc-milestone {
+    font-size: 0.58rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--gold-dark);
+    background: rgba(180,140,60,0.15);
+    border: 1px solid rgba(180,140,60,0.3);
+    border-radius: 2px;
+    padding: 0 3px;
+    line-height: 1.6;
+  }
+
+  /* Pet tracker row */
+  .bc-pet-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+    padding: 0.2rem 0.4rem;
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+  }
+  .bc-pet-icon { font-size: 0.7rem; }
+  .bc-pet-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bc-pet-pct { font-weight: 600; color: var(--text-light); white-space: nowrap; }
   .bc-name {
     font-family: 'Cinzel', serif;
     font-size: 0.88rem;
@@ -3337,6 +3415,138 @@
     font-family: 'IM Fell English', serif;
     font-style: italic;
     font-size: 1rem;
+  }
+
+  /* ── Rotation Suggester ── */
+  .bt-rotation-wrap {
+    margin-top: 2rem;
+    border: 1px solid rgba(122,96,48,0.25);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .bt-rotation-toggle {
+    width: 100%;
+    background: rgba(0,0,0,0.25);
+    border: none;
+    color: var(--gold-dark);
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.15s;
+  }
+  .bt-rotation-toggle:hover { background: rgba(0,0,0,0.4); }
+  .bt-rotation-chevron { font-size: 0.75rem; opacity: 0.7; }
+  .bt-rotation-panel { background: rgba(0,0,0,0.15); }
+  .bt-rotation-controls {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(122,96,48,0.15);
+  }
+  .bt-rotation-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .bt-rotation-label input { cursor: pointer; accent-color: var(--gold-dark); }
+  .rot-category-header {
+    font-size: 0.72rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    color: var(--gold-dark);
+    letter-spacing: 0.05em;
+    padding: 0.6rem 1rem 0.3rem;
+    opacity: 0.8;
+  }
+  .rot-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .rot-row:hover { background: rgba(255,255,255,0.03); }
+  .rot-row:last-child { border-bottom: none; }
+  .rot-img {
+    width: 32px; height: 32px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
+  .rot-img-placeholder { width: 32px; height: 32px; flex-shrink: 0; }
+  .rot-info { flex: 1; min-width: 0; }
+  .rot-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 0.2rem;
+  }
+  .rot-meta {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.25rem;
+  }
+  .rot-kc { font-size: 0.7rem; color: var(--text-muted); }
+  .rot-gphr { font-size: 0.7rem; color: var(--gold-dark); }
+  .rot-expected { font-size: 0.7rem; color: var(--text-muted); font-style: italic; }
+  .rot-drops { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .rot-drop {
+    font-size: 0.68rem;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 2px;
+    padding: 1px 5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .rot-drop-more { opacity: 0.6; }
+  .rot-dry { font-weight: 600; margin-left: 2px; }
+  .rot-dry-dry { color: #c8903a; }
+  .rot-dry-very-dry { color: #c84040; }
+  .rot-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    flex-shrink: 0;
+    width: 60px;
+  }
+  .rot-bar {
+    width: 60px; height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .rot-bar-fill {
+    height: 100%;
+    background: var(--gold-dark);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+  .rot-pct { font-size: 0.65rem; color: var(--text-muted); }
+  .rot-empty {
+    padding: 1.5rem 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+    text-align: center;
   }
 
   @media (max-width: 600px) {
