@@ -1127,161 +1127,248 @@ function openDetail(order) {
   const badgeHtml = `<span class="type-badge badge-${item.type}">${TYPE_ICONS[item.type] ? '<img src="' + TYPE_ICONS[item.type] + '" alt="" style="width:12px;height:12px;object-fit:contain;vertical-align:middle;margin-right:3px;opacity:0.85">' : ''} ${item.type}</span>`;
   document.getElementById('detail-subtitle').innerHTML = badgeHtml +
     (item.bossTier ? ` <span class="boss-tier tier-${item.bossTier.toLowerCase().replace(' tier','').trim()}" style="margin-left:0.5rem">${item.bossTier}</span>` : '');
+
+  const isBoss = item.type === 'Boss' || item.entryType === 'boss';
   const hasStats = Object.keys(playerStats).length > 0;
-  const rows = [];
-  rows.push(['Order', `#${item.order}`]);
-  if (item.location && item.type !== 'Boss') rows.push(['Location', item.location]);
-  if (item.qp > 0) rows.push(['Quest Points', `<span class="qp-badge">${item.qp} QP</span>`]);
-  if (item.type === 'Boss') {
-    const currentKC = bossKC[item.order] || 0;
-    // Rich data fields
+
+  if (isBoss) {
+    // ── TABBED BOSS MODAL ──────────────────────────────────────
     var richModal = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[item.name] : null;
+    var currentKC = bossKC[item.order] || 0;
+
+    // ── Tab: Info ──
+    var infoRows = [];
+    infoRows.push(['Order', '#' + item.order]);
     if (richModal) {
-      if (richModal.location) rows.push(['Location', richModal.location + (richModal.instanced ? ' <span style="font-size:0.72rem;color:var(--text-muted)">(instanced)</span>' : '') + (richModal.wilderness ? ' <span style="font-size:0.72rem;color:#e06060">⚠ Wilderness</span>' : '')]);
-      if (richModal.weakness) rows.push(['Weakness', richModal.weakness]);
-      if (richModal.combatLevel) rows.push(['Combat Level', richModal.combatLevel]);
-      if (richModal.killsPerHour) rows.push(['Kills / hr', '~' + richModal.killsPerHour + ' (avg)']);
+      if (richModal.location) infoRows.push(['Location', richModal.location +
+        (richModal.instanced ? ' <span class="detail-tag">instanced</span>' : '') +
+        (richModal.wilderness ? ' <span class="detail-tag detail-tag-danger">⚠ Wilderness</span>' : '') +
+        (richModal.multiCombat ? ' <span class="detail-tag">multi</span>' : '')]);
+      if (richModal.weakness)    infoRows.push(['Weakness', richModal.weakness]);
+      if (richModal.combatLevel) infoRows.push(['Combat Level', richModal.combatLevel]);
+      if (richModal.killsPerHour) infoRows.push(['Kills / hr', '~' + richModal.killsPerHour + ' (avg)']);
       var gphrModal = calcBossGpHr(richModal);
-      if (gphrModal) rows.push(['Est. GP/hr', '<span style="color:var(--gold-dark)">' + fmtGpHr(gphrModal) + '</span> <span style="font-size:0.72rem;color:var(--text-muted)">(unique drops only)</span>']);
+      if (gphrModal) infoRows.push(['Est. GP/hr', '<span style="color:var(--gold-dark);font-weight:600">' + fmtGpHr(gphrModal) + '</span> <span style="font-size:0.72rem;color:var(--text-muted)">(unique drops only)</span>']);
+      if (richModal.petName) {
+        var petRateModal = parseDropRate(richModal.petRate);
+        if (petRateModal && currentKC > 0) {
+          var petPct = Math.round(dropProbability(petRateModal, currentKC) * 100);
+          infoRows.push(['Pet', richModal.petName + ' — <strong>' + petPct + '%</strong> chance at ' + currentKC + ' KC <span style="font-size:0.72rem;color:var(--text-muted)">(' + richModal.petRate + ')</span>']);
+        } else {
+          infoRows.push(['Pet', richModal.petName + (richModal.petRate ? ' <span style="font-size:0.72rem;color:var(--text-muted)">(' + richModal.petRate + ')</span>' : '')]);
+        }
+      }
     } else if (item.location) {
-      rows.push(['Location', item.location]);
+      infoRows.push(['Location', item.location]);
     }
-    rows.push(['Kill Count', `<div style="display:flex;align-items:center;gap:0.75rem">
+    infoRows.push(['Kill Count', `<div style="display:flex;align-items:center;gap:0.75rem">
       <input type="number" min="0" id="kc-input-${item.order}" value="${currentKC}"
         style="background:var(--stone);border:1px solid var(--stone-lighter);border-radius:3px;color:var(--gold);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;padding:0.3rem 0.6rem;width:90px;outline:none;text-align:center"
         onchange="updateKC(${item.order}, this.value)" oninput="updateKC(${item.order}, this.value)">
       <span style="font-size:0.8rem;color:var(--text-muted)">kills logged</span>
     </div>`]);
-    if (richModal && richModal.petName && richModal.petRate) {
-      var petRateModal = parseDropRate(richModal.petRate);
-      if (petRateModal && currentKC > 0) {
-        var petPctModal = Math.round(dropProbability(petRateModal, currentKC) * 100);
-        rows.push(['Pet Chance', richModal.petName + ' — <strong>' + petPctModal + '%</strong> chance at ' + currentKC + ' KC <span style="font-size:0.72rem;color:var(--text-muted)">(' + richModal.petRate + ')</span>']);
-      } else if (petRateModal) {
-        rows.push(['Pet', richModal.petName + ' <span style="font-size:0.72rem;color:var(--text-muted)">(' + richModal.petRate + ')</span>']);
-      }
+    if (item.skillReqs) {
+      const reqs = parseSkillReqs(item.skillReqs);
+      const html = reqs.map(r => {
+        const have = r.isQP ? playerQP : r.skill.toLowerCase() === 'combat' ? getCombatLevel() : (playerStats[r.skill.toLowerCase()] || 1);
+        const fail = hasStats && have < r.level;
+        return `<div style="margin-bottom:0.2rem"><span class="${fail ? 'req-unmet' : ''}">
+          ${r.isQP ? 'Quest Points' : r.skill} ${r.level}${r.unboostable ? ' (unboostable)' : r.boostable ? ' (boostable)' : ''}
+          ${hasStats ? `<span style="color:var(--text-muted);font-size:0.78rem;margin-left:0.3rem">[you: ${have}]</span>` : ''}
+        </span></div>`;
+      }).join('');
+      infoRows.push(['Skill Reqs', html]);
     }
-  }
-  if (item.skillReqs) {
-    const reqs = parseSkillReqs(item.skillReqs);
-    const html = reqs.map(r => {
-      const have = r.isQP ? playerQP : r.skill.toLowerCase() === 'combat' ? getCombatLevel() : r.skill.toLowerCase() === 'total level' ? getTotalLevel() : (playerStats[r.skill.toLowerCase()] || 1);
-      const fail = hasStats && have < r.level;
-      return `<div style="margin-bottom:0.2rem"><span class="${fail ? 'req-unmet' : ''}">
-        ${r.isQP ? 'Quest Points' : r.skill} ${r.level}${r.unboostable ? ' (unboostable)' : r.boostable ? ' (boostable)' : ''}
-        ${hasStats ? `<span style="color:var(--text-muted);font-size:0.78rem;margin-left:0.3rem">[you: ${have}]</span>` : ''}
-      </span></div>`;
-    }).join('');
-    rows.push(['Skill Reqs', html]);
-  }
-  if (item.questPrereqs) {
-    const prereqs = item.questPrereqs.split(';').map(s => s.trim()).filter(Boolean);
-    const html = prereqs.map(p => {
-      const found = SPINE_DATA.find(d => d.name.toLowerCase() === p.toLowerCase());
-      const done = found && completedSet.has(found.order);
-      return `<div style="margin-bottom:0.2rem">${done ? '<span style="color:var(--green-light)">✓</span>' : '<span style="color:var(--text-muted)">○</span>'} ${p}</div>`;
-    }).join('');
-    rows.push(['Quest Prereqs', html]);
-  }
-  if (item.info) rows.push(['Notes', `<span style="font-family:'IM Fell English',serif;font-style:italic">${item.info}</span>`]);
-  if (item.notableDrops && item.notableDrops.length > 0 || (typeof BOSS_DATA !== 'undefined' && BOSS_DATA[item.name] && BOSS_DATA[item.name].drops && BOSS_DATA[item.name].drops.length > 0)) {
-    var rich = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[item.name] : null;
-    var modalDrops = rich && rich.drops && rich.drops.length
-      ? rich.drops
-      : (item.notableDrops || []).map(function(d) { return { name: d[0], rate: d[1], id: d[2] || null }; });
-    const dropsHtml = modalDrops.map(function(drop) {
-      var dropName = drop.name, dropRate = drop.rate, itemId = drop.id;
-      const dropKey = `${item.order}-${dropName}`;
-      const mainEntry = SPINE_DATA.find(d => d.order !== item.order && d.name.toLowerCase() === dropName.toLowerCase());
-      const dropDone = !!obtainedDrops[dropKey];
-      const price = gePrice(itemId, 'short');
-      const priceHtml = price
-        ? `<span style="font-size:0.72rem;color:var(--gold-dark);white-space:nowrap;margin-left:0.25rem" title="GE price (instant buy)">${price}</span>`
-        : '';
-      // Dry info in modal
-      var dryStr = '';
-      if (!dropDone && (bossKC[item.order] || 0) > 0) {
-        var dryInfo = getDryInfo(drop, bossKC[item.order]);
-        if (dryInfo && dryInfo.prob >= 0.25) {
-          var dryCol = dryInfo.severity === 'very-dry' ? '#c84040' : dryInfo.severity === 'dry' ? '#c8903a' : '#a0a060';
-          dryStr = `<span style="font-size:0.68rem;color:${dryCol};margin-left:0.25rem" title="${dryInfo.pct}% of players would have this by now">${dryInfo.pct}%</span>`;
-        }
-      }
-      return `<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.35rem;padding:0.3rem 0.5rem;background:rgba(0,0,0,0.2);border-radius:3px">
-        <div class="check-box ${dropDone ? 'checked' : ''}" style="width:14px;height:14px;flex-shrink:0"
-          onclick="toggleDropDone('${dropKey}', ${item.order}, ${mainEntry ? mainEntry.order : 'null'})" title="Mark obtained"></div>
-        <span style="flex:1;font-size:0.83rem;color:${dropDone ? '#6fc96f' : 'var(--text-light)'}${mainEntry ? ';cursor:pointer' : ''}"
-          ${mainEntry ? `onclick="closeDetailBtn(); setTimeout(()=>openDetail(${mainEntry.order}),50)"` : ''}>
-          ${dropName}${mainEntry ? ' <span style="color:var(--gold-dark);font-size:0.7rem">→</span>' : ''}
-        </span>
-        <span style="font-size:0.73rem;color:var(--stone-lighter);white-space:nowrap">${dropRate}</span>
-        ${dryStr}${priceHtml}
-      </div>`;
-    }).join('');
-    rows.push(['Notable Drops', dropsHtml]);
+    if (item.questPrereqs) {
+      const prereqs = item.questPrereqs.split(';').map(s => s.trim()).filter(Boolean);
+      const html = prereqs.map(p => {
+        const found = SPINE_DATA.find(d => d.name.toLowerCase() === p.toLowerCase());
+        const done = found && completedSet.has(found.order);
+        return `<div style="margin-bottom:0.2rem">${done ? '<span style="color:var(--green-light)">✓</span>' : '<span style="color:var(--text-muted)">○</span>'} ${p}</div>`;
+      }).join('');
+      infoRows.push(['Quest Prereqs', html]);
+    }
+    if (item.info) infoRows.push(['Notes', `<span style="font-family:'IM Fell English',serif;font-style:italic">${item.info}</span>`]);
+    infoRows.push(['My Notes', `<textarea id="user-note-ta" class="user-note-ta" placeholder="Add your own notes…" onblur="saveNote(${item.order}, this.value)" onclick="event.stopPropagation()">${userNotes[item.order] || ''}</textarea>`]);
 
-    // Avg kills to completion
-    var completion = calcAvgKillsToCompletion(modalDrops, obtainedDrops, item.order);
-    if (completion.total > 0) {
-      var completionHtml = '';
-      if (completion.remaining === 0) {
-        completionHtml = '<span style="color:var(--green-light)">✓ All drops obtained</span>';
-      } else {
-        completionHtml = '<span style="color:var(--text-light);font-weight:600">~' + completion.remaining.toLocaleString() + '</span>' +
-          ' <span style="color:var(--text-muted);font-size:0.78rem">avg kills remaining</span>';
-        if (completion.remaining !== completion.total) {
-          completionHtml += ' <span style="color:var(--text-muted);font-size:0.75rem">(' + completion.total.toLocaleString() + ' from scratch)</span>';
-        }
+    var infoTabHtml = infoRows.map(([l,v]) =>
+      `<div class="detail-row"><div class="detail-row-label">${l}</div><div class="detail-row-val">${v}</div></div>`
+    ).join('');
+
+    // ── Tab: Drops ──
+    var modalDrops = richModal && richModal.drops && richModal.drops.length
+      ? richModal.drops
+      : (item.notableDrops || []).map(function(d) { return { name: d[0], rate: d[1], id: d[2] || null }; });
+
+    var dropsTabHtml = '';
+    if (modalDrops.length) {
+      var completion = calcAvgKillsToCompletion(modalDrops, obtainedDrops, item.order);
+      var completionBar = '';
+      if (completion.total > 0) {
+        var cpct = Math.round((completion.total - completion.remaining) / completion.total * 100);
+        completionBar = '<div style="margin-bottom:0.75rem">' +
+          '<div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-muted);margin-bottom:4px">' +
+            '<span>' + (completion.remaining === 0 ? '✓ All drops obtained' : '~' + completion.remaining.toLocaleString() + ' avg kills remaining') + '</span>' +
+            (completion.remaining !== completion.total && completion.remaining > 0 ? '<span>' + completion.total.toLocaleString() + ' from scratch</span>' : '') +
+          '</div>' +
+          '<div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px"><div style="height:100%;width:' + cpct + '%;background:var(--gold-dark);border-radius:2px"></div></div>' +
+        '</div>';
       }
-      rows.push(['Avg to Complete', completionHtml]);
+      dropsTabHtml = completionBar + modalDrops.map(function(drop) {
+        var dropName = drop.name, dropRate = drop.rate, itemId = drop.id;
+        const dropKey = `${item.order}-${dropName}`;
+        const mainEntry = SPINE_DATA.find(d => d.order !== item.order && d.name.toLowerCase() === dropName.toLowerCase());
+        const dropDone = !!obtainedDrops[dropKey];
+        const price = gePrice(itemId, 'short');
+        const priceHtml = price ? `<span style="font-size:0.72rem;color:var(--gold-dark);white-space:nowrap;margin-left:0.25rem">${price}</span>` : '';
+        var dryStr = '';
+        if (!dropDone && currentKC > 0) {
+          var dryInfo = getDryInfo(drop, currentKC);
+          if (dryInfo && dryInfo.prob >= 0.25) {
+            var dryCol = dryInfo.severity === 'very-dry' ? '#c84040' : dryInfo.severity === 'dry' ? '#c8903a' : '#a0a060';
+            dryStr = `<span style="font-size:0.68rem;color:${dryCol};margin-left:0.25rem;font-weight:600" title="${dryInfo.pct}% of players would have this by ${currentKC} KC">${dryInfo.pct}% dry</span>`;
+          }
+        }
+        return `<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.35rem;padding:0.3rem 0.5rem;background:rgba(0,0,0,0.2);border-radius:3px">
+          <div class="check-box ${dropDone ? 'checked' : ''}" style="width:14px;height:14px;flex-shrink:0"
+            onclick="toggleDropDone('${dropKey}', ${item.order}, ${mainEntry ? mainEntry.order : 'null'})" title="Mark obtained"></div>
+          <span style="flex:1;font-size:0.83rem;color:${dropDone ? '#6fc96f' : 'var(--text-light)'}${mainEntry ? ';cursor:pointer' : ''}"
+            ${mainEntry ? `onclick="closeDetailBtn(); setTimeout(()=>openDetail(${mainEntry.order}),50)"` : ''}>
+            ${dropName}${dropDone ? ' <span style="font-size:0.7rem">✓</span>' : ''}${mainEntry ? ' <span style="color:var(--gold-dark);font-size:0.7rem">→</span>' : ''}
+          </span>
+          <span style="font-size:0.73rem;color:var(--stone-lighter);white-space:nowrap">${dropRate}</span>
+          ${dryStr}${priceHtml}
+        </div>`;
+      }).join('');
+    } else {
+      dropsTabHtml = '<div style="color:var(--text-muted);font-style:italic;padding:1rem 0">No drops tracked for this boss.</div>';
     }
-  }
-  // Combat Achievements section in modal
-  if (item.type === 'Boss' || item.entryType === 'boss') {
+
+    // ── Tab: Combat Tasks ──
+    var caTabHtml = '';
     var caTasks = getCaTasksForBoss(item.name);
     if (caTasks.length > 0) {
       var caTotal = caTasks.length;
       var caDone = caTasks.filter(function(t) { return caCompleted[t.id]; }).length;
-      var caPct = caTotal > 0 ? Math.round(caDone / caTotal * 100) : 0;
-      var caTasksHtml = caTasks.map(function(t) {
-        var done = !!caCompleted[t.id];
-        var tierKey = t.tier === 'Grandmaster' ? 'gm' : t.tier.toLowerCase();
-        return '<div class="detail-ca-task" onclick="toggleCaTask(\'' + t.id + '\')">' +
-          '<div class="detail-ca-task-check' + (done ? ' done' : '') + '">' + (done ? '✓' : '') + '</div>' +
-          '<span class="detail-ca-task-name' + (done ? ' done' : '') + '">' + t.name + '</span>' +
-          '<span class="detail-ca-task-tier ' + tierKey + '">' + t.tier + '</span>' +
-        '</div>';
-      }).join('');
-      var caHtml = '<div class="detail-ca-section">' +
+      var caPct = Math.round(caDone / caTotal * 100);
+      caTabHtml = '<div class="detail-ca-section">' +
         '<div class="detail-ca-header">' +
           '<div class="detail-ca-bar"><div class="detail-ca-bar-fill" style="width:' + caPct + '%"></div></div>' +
           '<span class="detail-ca-frac">' + caDone + ' / ' + caTotal + ' tasks</span>' +
           '<button class="detail-ca-link" onclick="closeDetailBtn();setCaBossFilter(\'' + item.name + '\');showPage(\'combat\');event.stopPropagation()">↗ View all CAs</button>' +
         '</div>' +
-        caTasksHtml +
+        caTasks.map(function(t) {
+          var done = !!caCompleted[t.id];
+          var tierKey = t.tier === 'Grandmaster' ? 'gm' : t.tier.toLowerCase();
+          return '<div class="detail-ca-task" onclick="toggleCaTask(\'' + t.id + '\')">' +
+            '<div class="detail-ca-task-check' + (done ? ' done' : '') + '">' + (done ? '✓' : '') + '</div>' +
+            '<span class="detail-ca-task-name' + (done ? ' done' : '') + '">' + t.name + '</span>' +
+            '<span class="detail-ca-task-tier ' + tierKey + '">' + t.tier + '</span>' +
+          '</div>';
+        }).join('') +
       '</div>';
-      rows.push(['Combat Tasks', caHtml]);
+    } else {
+      caTabHtml = '<div style="color:var(--text-muted);font-style:italic;padding:1rem 0">No combat tasks for this boss.</div>';
     }
+
+    // ── Render tabbed layout ──
+    var tabs = [
+      { id: 'info',   label: 'Info',           content: infoTabHtml },
+      { id: 'drops',  label: 'Drops (' + modalDrops.length + ')', content: dropsTabHtml },
+      { id: 'ca',     label: 'Combat Tasks' + (caTasks.length ? ' (' + caTasks.length + ')' : ''), content: caTabHtml },
+    ];
+    var defaultTab = 'info';
+
+    var tabsHtml = '<div class="detail-tabs">' +
+      tabs.map(function(t) {
+        return '<button class="detail-tab' + (t.id === defaultTab ? ' active' : '') + '" onclick="switchDetailTab(\'' + t.id + '\')">' + t.label + '</button>';
+      }).join('') +
+    '</div>';
+
+    var panelsHtml = tabs.map(function(t) {
+      return '<div class="detail-tab-panel' + (t.id === defaultTab ? ' active' : '') + '" data-tab="' + t.id + '">' + t.content + '</div>';
+    }).join('');
+
+    document.getElementById('detail-body').innerHTML = tabsHtml + panelsHtml;
+
+  } else {
+    // ── NON-BOSS: original flat layout ──────────────────────────
+    const rows = [];
+    rows.push(['Order', `#${item.order}`]);
+    if (item.location) rows.push(['Location', item.location]);
+    if (item.qp > 0) rows.push(['Quest Points', `<span class="qp-badge">${item.qp} QP</span>`]);
+    if (item.skillReqs) {
+      const reqs = parseSkillReqs(item.skillReqs);
+      const html = reqs.map(r => {
+        const have = r.isQP ? playerQP : r.skill.toLowerCase() === 'combat' ? getCombatLevel() : r.skill.toLowerCase() === 'total level' ? getTotalLevel() : (playerStats[r.skill.toLowerCase()] || 1);
+        const fail = hasStats && have < r.level;
+        return `<div style="margin-bottom:0.2rem"><span class="${fail ? 'req-unmet' : ''}">
+          ${r.isQP ? 'Quest Points' : r.skill} ${r.level}${r.unboostable ? ' (unboostable)' : r.boostable ? ' (boostable)' : ''}
+          ${hasStats ? `<span style="color:var(--text-muted);font-size:0.78rem;margin-left:0.3rem">[you: ${have}]</span>` : ''}
+        </span></div>`;
+      }).join('');
+      rows.push(['Skill Reqs', html]);
+    }
+    if (item.questPrereqs) {
+      const prereqs = item.questPrereqs.split(';').map(s => s.trim()).filter(Boolean);
+      const html = prereqs.map(p => {
+        const found = SPINE_DATA.find(d => d.name.toLowerCase() === p.toLowerCase());
+        const done = found && completedSet.has(found.order);
+        return `<div style="margin-bottom:0.2rem">${done ? '<span style="color:var(--green-light)">✓</span>' : '<span style="color:var(--text-muted)">○</span>'} ${p}</div>`;
+      }).join('');
+      rows.push(['Quest Prereqs', html]);
+    }
+    if (item.info) rows.push(['Notes', `<span style="font-family:'IM Fell English',serif;font-style:italic">${item.info}</span>`]);
+    if (item.notableDrops && item.notableDrops.length > 0) {
+      const dropsHtml = item.notableDrops.map(([dropName, dropRate, itemId]) => {
+        const dropKey = `${item.order}-${dropName}`;
+        const mainEntry = SPINE_DATA.find(d => d.order !== item.order && d.name.toLowerCase() === dropName.toLowerCase());
+        const dropDone = !!obtainedDrops[dropKey];
+        const price = gePrice(itemId, 'short');
+        const priceHtml = price ? `<span style="font-size:0.72rem;color:var(--gold-dark);white-space:nowrap;margin-left:0.25rem">${price}</span>` : '';
+        return `<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.35rem;padding:0.3rem 0.5rem;background:rgba(0,0,0,0.2);border-radius:3px">
+          <div class="check-box ${dropDone ? 'checked' : ''}" style="width:14px;height:14px;flex-shrink:0"
+            onclick="toggleDropDone('${dropKey}', ${item.order}, ${mainEntry ? mainEntry.order : 'null'})" title="Mark obtained"></div>
+          <span style="flex:1;font-size:0.83rem;color:${dropDone ? '#6fc96f' : 'var(--text-light)'}${mainEntry ? ';cursor:pointer' : ''}"
+            ${mainEntry ? `onclick="closeDetailBtn(); setTimeout(()=>openDetail(${mainEntry.order}),50)"` : ''}>
+            ${dropName}${mainEntry ? ' <span style="color:var(--gold-dark);font-size:0.7rem">→</span>' : ''}
+          </span>
+          <span style="font-size:0.73rem;color:var(--stone-lighter);white-space:nowrap">${dropRate}</span>
+          ${priceHtml}
+        </div>`;
+      }).join('');
+      rows.push(['Notable Drops', dropsHtml]);
+    }
+    rows.push(['My Notes', `<textarea id="user-note-ta" class="user-note-ta" placeholder="Add your own notes…" onblur="saveNote(${item.order}, this.value)" onclick="event.stopPropagation()">${userNotes[item.order] || ''}</textarea>`]);
+    if (item.source) rows.push(['Guide', `<a href="${item.source}" target="_blank" style="color:var(--gold-light)">${item.source.replace(/https?:\/\//,'').substring(0,50)}…</a>`]);
+    document.getElementById('detail-body').innerHTML = rows.map(([l,v]) =>
+      `<div class="detail-row"><div class="detail-row-label">${l}</div><div class="detail-row-val">${v}</div></div>`
+    ).join('');
   }
-  rows.push(['My Notes', `<textarea id="user-note-ta" class="user-note-ta" placeholder="Add your own notes…" onblur="saveNote(${item.order}, this.value)" onclick="event.stopPropagation()">${userNotes[item.order] || ''}</textarea>`]);
-  if (item.source) rows.push(['Guide', `<a href="${item.source}" target="_blank" style="color:var(--gold-light)">${item.source.replace(/https?:\/\//,'').substring(0,50)}…</a>`]);
-  document.getElementById('detail-body').innerHTML = rows.map(([l,v]) =>
-    `<div class="detail-row"><div class="detail-row-label">${l}</div><div class="detail-row-val">${v}</div></div>`
-  ).join('');
+
   const done = completedSet.has(item.order);
   document.getElementById('detail-actions').innerHTML = `
     <button class="btn" onclick="toggleDone(${item.order}); closeDetailBtn()">${done ? '✗ Mark Incomplete' : '✓ Mark Complete'}</button>
     <button class="btn btn-ghost" onclick="buildPathTo(${item.order})" title="Recursively find all incomplete prerequisites and add them to Custom Path" style="border-color:#4a7fc8;color:#8abcf8">🗺 Build Path</button>
     <button class="btn btn-ghost" onclick="showDownstreamTree(${item.order})" title="See what completing this opens up" style="border-color:rgba(200,168,75,0.35);color:var(--gold-dark)">⚔ Opens The Way</button>
-    ${item.type === 'Boss' ? `<button class="btn btn-ghost" onclick="generateBossCard(${item.order})" title="Download a shareable image of your boss progress" style="border-color:rgba(180,140,60,0.35);color:var(--gold-dark)">📤 Share Card</button>` : ''}
+    ${isBoss ? `<button class="btn btn-ghost" onclick="generateBossCard(${item.order})" title="Download shareable progress card" style="border-color:rgba(180,140,60,0.35);color:var(--gold-dark)">📤 Share Card</button>` : ''}
     ${item.source ? `<a href="${item.source}" target="_blank"><button class="btn btn-ghost">Open Guide ↗</button></a>` : ''}
   `;
   document.getElementById('detail-overlay').classList.add('open');
 }
 
+function switchDetailTab(tabId) {
+  document.querySelectorAll('.detail-tab').forEach(function(btn) {
+    btn.classList.toggle('active', btn.textContent.trim().startsWith(tabId === 'info' ? 'Info' : tabId === 'drops' ? 'Drops' : 'Combat'));
+  });
+  document.querySelectorAll('.detail-tab-panel').forEach(function(panel) {
+    panel.classList.toggle('active', panel.dataset.tab === tabId);
+  });
+}
 function updateKC(order, value) {
   bossKC[order] = Math.max(0, parseInt(value) || 0);
   saveToStorage();
+  refreshBossCard(order);
 }
 
 // ============================================================
@@ -4325,9 +4412,14 @@ function buildBossCardHtml(boss) {
 
   var cardClass = 'boss-card' + (allDone ? ' bc-all-done' : '');
 
-  // GP/hr estimate
+  // GP/hr estimate — show value when prices loaded, or kph only as fallback
   var gphr = calcBossGpHr(rich);
-  var gphrHtml = gphr ? '<div class="bc-gphr">' + fmtGpHr(gphr) + '</div>' : '';
+  var gphrHtml = '';
+  if (gphr) {
+    gphrHtml = '<div class="bc-gphr">~' + fmtGpHr(gphr) + '</div>';
+  } else if (rich.killsPerHour) {
+    gphrHtml = '<div class="bc-gphr bc-gphr-muted">~' + rich.killsPerHour + ' kills/hr</div>';
+  }
 
   var pct = totalDrops > 0 ? Math.round(doneDrops / totalDrops * 100) : 0;
   var progressHtml = totalDrops > 0
@@ -4347,19 +4439,19 @@ function buildBossCardHtml(boss) {
     var price = gePrice(itemId, 'short');
     var priceHtml = price ? '<span class="bc-drop-price">' + price + '</span>' : '';
 
-    // Dry indicator — only on un-obtained drops when KC is logged
+    // Dry indicator inline after the rate — contextual to this drop
     var dryHtml = '';
     if (!done && kc > 0) {
       var dryInfo = getDryInfo(drop, kc);
       if (dryInfo && dryInfo.prob >= 0.25) {
         dryHtml = '<span class="bc-dry bc-dry-' + dryInfo.severity + '" title="' +
-          dryInfo.pct + '% of players would have this by now">' +
+          dryInfo.pct + '% of players would have this by ' + kc + ' KC">' +
           dryInfo.pct + '%</span>';
       }
     }
 
     return '<div class="bc-drop-row' + (done ? ' bc-drop-done' : '') + '"' +
-      ' onclick="toggleDropDone(\'' + dropKey.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', ' + boss.order + ', null)">' +
+      ' onclick="event.stopPropagation();toggleDropDone(\'' + dropKey.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', ' + boss.order + ', null)">' +
       '<div class="bc-drop-check">' + (done ? '✓' : '') + '</div>' +
       '<span class="bc-drop-name" title="' + dropName.replace(/"/g, '&quot;') + '">' + dropName + '</span>' +
       '<span class="bc-drop-rate">' + dropRate + '</span>' +
@@ -4417,19 +4509,18 @@ function buildBossCardHtml(boss) {
       '</div>'
     : '';
 
-  return '<div class="' + cardClass + '" id="bc-' + boss.order + '">' +
+  return '<div class="' + cardClass + '" id="bc-' + boss.order + '" onclick="openDetail(' + boss.order + ')" style="cursor:pointer">' +
     '<div class="bc-header">' +
       imageHtml +
-      '<span class="bc-name" onclick="openDetail(' + boss.order + ')" title="Open details">' +
+      '<span class="bc-name" title="Open details">' +
         boss.name + (tierHtml ? '&ensp;' + tierHtml : '') +
       '</span>' +
-      '<div class="bc-kc-wrap">' +
+      '<div class="bc-kc-wrap" onclick="event.stopPropagation()">' +
         (milestoneHtml ? '<div class="bc-milestones">' + milestoneHtml + '</div>' : '') +
         '<span class="bc-kc-label">KC</span>' +
         '<input class="bc-kc-input" type="number" min="0" value="' + kc + '"' +
           ' onchange="updateKC(' + boss.order + ', this.value)"' +
-          ' oninput="updateKC(' + boss.order + ', this.value)"' +
-          ' onclick="event.stopPropagation()">' +
+          ' oninput="updateKC(' + boss.order + ', this.value)">' +
       '</div>' +
     '</div>' +
     gphrHtml +

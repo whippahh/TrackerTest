@@ -667,6 +667,45 @@
 
   .detail-body { padding: 1.25rem 1.5rem; }
 
+  /* Detail modal tabs (boss only) */
+  .detail-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(122,96,48,0.25);
+    padding: 0 1.5rem;
+    background: rgba(0,0,0,0.15);
+  }
+  .detail-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.65rem 1rem;
+    cursor: pointer;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .detail-tab:hover { color: var(--text-light); }
+  .detail-tab.active { color: var(--gold-dark); border-bottom-color: var(--gold-dark); }
+  .detail-tab-panel { display: none; padding: 1.25rem 1.5rem; }
+  .detail-tab-panel.active { display: block; }
+
+  /* Inline tags in detail rows */
+  .detail-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 2px;
+    padding: 0 4px;
+    margin-left: 4px;
+    color: var(--text-muted);
+  }
+  .detail-tag-danger { background: rgba(200,64,64,0.15); border-color: rgba(200,64,64,0.3); color: #e06060; }
+
   .detail-row {
     display: flex;
     gap: 0.75rem;
@@ -3223,6 +3262,7 @@
     padding: 1px 6px;
     margin-bottom: 0.5rem;
   }
+  .bc-gphr-muted { color: var(--text-muted); background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
 
   /* Dry tracker — per-drop indicator */
   .bc-dry {
