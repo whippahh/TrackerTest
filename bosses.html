@@ -55,34 +55,36 @@
       <button class="chip" data-btfilter="master"        onclick="setBtFilter('master',this)">Master</button>
       <button class="chip" data-btfilter="grandmaster"   onclick="setBtFilter('grandmaster',this)">GM</button>
       <button class="chip chip-cankill" id="bt-cankill" onclick="toggleBtCanKill(this)" title="Only show bosses you currently meet the requirements for">⚔ Can Kill</button>
+      <button class="chip chip-cankill" id="bt-rotation-btn" onclick="toggleRotationPanel(this)" title="Open boss rotation suggester">⚙ Rotation</button>
       <span class="bt-summary" id="bt-summary"></span>
     </div>
 
-    <!-- Boss Rotation Suggester -->
-    <div class="bt-rotation-wrap" id="bt-rotation-wrap">
-      <button class="bt-rotation-toggle" id="bt-rotation-toggle" onclick="toggleRotationPanel()">
-        ⚔ Boss Rotation Suggester <span class="bt-rotation-chevron" id="bt-rotation-chevron">▼</span>
-      </button>
-      <div class="bt-rotation-panel" id="bt-rotation-panel" style="display:none">
+    <div class="bt-main-layout" id="bt-main-layout">
+      <div class="boss-cards-grid" id="bt-grid"></div>
+
+      <!-- Boss Rotation Sidebar -->
+      <div class="bt-rotation-sidebar" id="bt-rotation-sidebar" style="display:none">
+        <div class="bt-rotation-sidebar-header">
+          <span>⚔ Rotation Suggester</span>
+          <button class="bt-rotation-close" onclick="toggleRotationPanel(document.getElementById('bt-rotation-btn'))">✕</button>
+        </div>
         <div class="bt-rotation-controls">
           <label class="bt-rotation-label">
             <input type="checkbox" id="rot-cankill-only" onchange="renderRotation()" checked>
-            Only bosses I can kill
+            Can kill
           </label>
           <label class="bt-rotation-label">
             <input type="checkbox" id="rot-missing-only" onchange="renderRotation()" checked>
-            Only bosses with missing drops
+            Missing drops
           </label>
           <label class="bt-rotation-label">
             <input type="checkbox" id="rot-started-only" onchange="renderRotation()">
-            Only bosses I've started
+            Started only
           </label>
         </div>
-        <div id="bt-rotation-body"></div>
+        <div id="bt-rotation-body" class="bt-rotation-body-scroll"></div>
       </div>
     </div>
-
-    <div class="boss-cards-grid" id="bt-grid"></div>
 
   </div>
 </div>

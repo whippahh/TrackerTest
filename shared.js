@@ -215,7 +215,7 @@ function collectSpineItemIds() {
   return Array.from(ids).sort(function(a, b) { return a - b; });
 }
 
-var GE_CACHE_KEY = 'ps_ge_prices';
+var GE_CACHE_KEY = 'ps_ge_prices_v2'; // bump version to bust old cache
 var GE_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in ms
 
 async function fetchGEPrices() {
@@ -226,7 +226,8 @@ async function fetchGEPrices() {
       var parsed = JSON.parse(cached);
       if (parsed && parsed.ts && (Date.now() - parsed.ts) < GE_CACHE_TTL && parsed.data) {
         window.GE_PRICES = parsed.data;
-        refreshGEPriceSurfaces();
+        // Defer surface refresh until after initial render
+        setTimeout(refreshGEPriceSurfaces, 0);
         return;
       }
     }
@@ -257,9 +258,9 @@ async function fetchGEPrices() {
 }
 
 function refreshGEPriceSurfaces() {
-  // Boss tracker: full re-render so cards get prices injected
+  // Always re-render boss tracker if on bosses page (prices affect cards)
   var bossGrid = document.getElementById('bt-grid');
-  if (bossGrid && bossGrid.children.length) {
+  if (bossGrid) {
     renderBossTracker();
   }
   // Detail modal: re-open same item so drop rows get prices
@@ -1365,10 +1366,17 @@ function switchDetailTab(tabId) {
     panel.classList.toggle('active', panel.dataset.tab === tabId);
   });
 }
+var _kcDebounceTimers = {};
 function updateKC(order, value) {
   bossKC[order] = Math.max(0, parseInt(value) || 0);
   saveToStorage();
-  refreshBossCard(order);
+  // Debounce card refresh — only re-render 600ms after the user stops typing
+  // so focus isn't lost mid-entry
+  clearTimeout(_kcDebounceTimers[order]);
+  _kcDebounceTimers[order] = setTimeout(function() {
+    refreshBossCard(order);
+    if (btRotationOpen) renderRotation();
+  }, 600);
 }
 
 // ============================================================
@@ -4557,12 +4565,14 @@ function refreshBossCard(order) {
 
 var btRotationOpen = false;
 
-function toggleRotationPanel() {
+function toggleRotationPanel(btnEl) {
   btRotationOpen = !btRotationOpen;
-  var panel = document.getElementById('bt-rotation-panel');
-  var chevron = document.getElementById('bt-rotation-chevron');
-  if (panel) panel.style.display = btRotationOpen ? 'block' : 'none';
-  if (chevron) chevron.textContent = btRotationOpen ? '▲' : '▼';
+  var sidebar = document.getElementById('bt-rotation-sidebar');
+  var layout  = document.getElementById('bt-main-layout');
+  var btn     = btnEl || document.getElementById('bt-rotation-btn');
+  if (sidebar) sidebar.style.display = btRotationOpen ? 'flex' : 'none';
+  if (layout)  layout.classList.toggle('bt-has-sidebar', btRotationOpen);
+  if (btn)     btn.classList.toggle('active', btRotationOpen);
   if (btRotationOpen) renderRotation();
 }
 
@@ -4726,12 +4736,6 @@ function renderRotation() {
 }
 
 // Re-render rotation whenever KC changes (if panel is open)
-var _origUpdateKC = updateKC;
-updateKC = function(order, value) {
-  _origUpdateKC(order, value);
-  if (btRotationOpen) renderRotation();
-};
-
 // Hash-based page routing removed — each page is now a standalone HTML file.
 
 
