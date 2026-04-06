@@ -1,4 +1,408 @@
 const BOSS_DATA = {
+  "Commander Zilyana": {
+    "order": 294,
+    "bossTier": "Hard tier",
+    "image": "https://oldschool.runescape.wiki/images/Commander_Zilyana.png",
+    "location": "God Wars Dungeon (Saradomin's Encampment)",
+    "instanced": true,
+    "wilderness": false,
+    "multiCombat": false,
+    "weakness": "Ranged",
+    "combatLevel": 596,
+    "killsPerHour": 55,
+    "petName": "Zilyana Jr.",
+    "petRate": "1/5000",
+    "questReqs": "",
+    "skillReqs": "Defence 70; Ranged 80; Agility 70",
+    "skillReqsParsed": {
+        "agility": 70
+    },
+    "info": "Hard tier | Armadyl crossbow Saradomin hilt",
+    "drops": [
+        {
+            "name": "Godsword shard 2",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Godsword shard 3",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Godsword shard 1",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Saradomin sword",
+            "id": 11838,
+            "rate": "1/127",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Saradomin's light",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Armadyl crossbow",
+            "id": 11785,
+            "rate": "1/508",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Saradomin hilt",
+            "id": 11814,
+            "rate": "1/508",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Pet zilyana",
+            "id": 12651,
+            "rate": "1/5000",
+            "qty": 1,
+            "gphr": true
+        }
+    ]
+},
+  "General Graardor": {
+    "order": 389,
+    "bossTier": "Elite tier",
+    "image": "https://oldschool.runescape.wiki/images/General_Graardor.png",
+    "location": "God Wars Dungeon (Bandos's Stronghold)",
+    "instanced": true,
+    "wilderness": false,
+    "multiCombat": false,
+    "weakness": "Ranged",
+    "combatLevel": 624,
+    "killsPerHour": 55,
+    "petName": "Graardor Jr.",
+    "petRate": "1/5000",
+    "questReqs": "",
+    "skillReqs": "Attack 85; Strength 85; Defence 80; Ranged 80",
+    "skillReqsParsed": {
+        "strength": 70
+    },
+    "info": "Elite tier | Bandos armour Bandos hilt",
+    "drops": [
+        {
+            "name": "Bandos tassets",
+            "id": 11834,
+            "rate": "1/381",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Bandos chestplate",
+            "id": 11832,
+            "rate": "1/381",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Bandos boots",
+            "id": 11836,
+            "rate": "1/381",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Bandos hilt",
+            "id": 11812,
+            "rate": "1/508",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Pet general graardor",
+            "id": 12650,
+            "rate": "1/5000",
+            "qty": 1,
+            "gphr": true
+        }
+    ]
+},
+  "K'ril Tsutsaroth": {
+    "order": 390,
+    "bossTier": "Hard tier",
+    "image": "https://oldschool.runescape.wiki/images/K%27ril_Tsutsaroth.png",
+    "location": "God Wars Dungeon (Zamorak's Fortress)",
+    "instanced": true,
+    "wilderness": false,
+    "multiCombat": false,
+    "weakness": "Ranged",
+    "combatLevel": 650,
+    "killsPerHour": 55,
+    "petName": "K'ril Jr.",
+    "petRate": "1/5000",
+    "questReqs": "",
+    "skillReqs": "Attack 85; Strength 85; Defence 80; Ranged 80",
+    "skillReqsParsed": {
+        "strength": 70,
+        "agility": 70
+    },
+    "info": "Hard tier | Zamorakian hasta Staff of the dead Zamorak hilt",
+    "drops": [
+        {
+            "name": "Zamorakian spear",
+            "id": 11824,
+            "rate": "1/127",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Steam battlestaff",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Zamorak hilt",
+            "id": 11816,
+            "rate": "1/508",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Staff of the dead",
+            "id": 11791,
+            "rate": "1/508",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Pet k'ril tsutsaroth",
+            "id": 12652,
+            "rate": "1/5000",
+            "qty": 1,
+            "gphr": true
+        }
+    ]
+},
+  "Kree'arra": {
+    "order": 392,
+    "bossTier": "Elite tier",
+    "image": "https://oldschool.runescape.wiki/images/Kree%27arra.png",
+    "location": "God Wars Dungeon (Armadyl's Eyrie)",
+    "instanced": true,
+    "wilderness": false,
+    "multiCombat": false,
+    "weakness": "Magic",
+    "combatLevel": 580,
+    "killsPerHour": 40,
+    "petName": "Kree'arra Jr.",
+    "petRate": "1/5000",
+    "questReqs": "",
+    "skillReqs": "Defence 80; Ranged 85",
+    "skillReqsParsed": {
+        "ranged": 70
+    },
+    "info": "Elite tier | Armadyl armour Armadyl hilt",
+    "drops": [
+        {
+            "name": "Armadyl chestplate",
+            "id": 11828,
+            "rate": "1/381",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Armadyl chainskirt",
+            "id": 11830,
+            "rate": "1/381",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Armadyl helmet",
+            "id": 11826,
+            "rate": "1/381",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Armadyl hilt",
+            "id": 11810,
+            "rate": "1/508",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Pet kree'arra",
+            "id": 12649,
+            "rate": "1/5000",
+            "qty": 1,
+            "gphr": true
+        }
+    ]
+},
+  "Nex": {
+    "order": 436,
+    "bossTier": "Elite tier",
+    "image": "https://oldschool.runescape.wiki/images/Nex.png",
+    "location": "God Wars Dungeon (Ancient Prison)",
+    "instanced": false,
+    "wilderness": false,
+    "multiCombat": true,
+    "weakness": "Ranged",
+    "combatLevel": 1001,
+    "killsPerHour": 8,
+    "petName": "Nexling",
+    "petRate": "1/500",
+    "questReqs": "",
+    "skillReqs": "Attack 90; Strength 90; Defence 90; Ranged 90; Magic 80",
+    "skillReqsParsed": {
+        "strength": 70,
+        "agility": 70
+    },
+    "info": "Elite tier | Torva armour Nihil horn Zaryte vambraces",
+    "drops": [
+        {
+            "name": "Nihil shard",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Zaryte vambraces",
+            "id": 26235,
+            "rate": "1/172",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Torva platebody (damaged)",
+            "id": 26378,
+            "rate": "1/258",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Torva platelegs (damaged)",
+            "id": 26380,
+            "rate": "1/258",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Nihil horn",
+            "id": 26372,
+            "rate": "1/258",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Torva full helm (damaged)",
+            "id": 26376,
+            "rate": "1/258",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Nexling",
+            "id": 26348,
+            "rate": "1/500",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Ancient hilt",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        }
+    ]
+},
+  "Crazy Archaeologist": {
+    "order": 230,
+    "bossTier": "Medium tier",
+    "image": "https://oldschool.runescape.wiki/images/Crazy_archaeologist.png",
+    "location": "Wilderness (Forgotten Cemetery)",
+    "instanced": false,
+    "wilderness": true,
+    "multiCombat": false,
+    "weakness": "Ranged / Slash",
+    "combatLevel": 204,
+    "killsPerHour": 60,
+    "petName": "Chaos Elemental Jr. (Chaos Fanatic)",
+    "petRate": "1/1000",
+    "questReqs": "",
+    "skillReqs": "Ranged 65; Magic 65; Prayer 43",
+    "skillReqsParsed": {},
+    "info": "Medium tier | Malediction shard 1 & Malediction shard 2 Odium shard 1 & Odium shard 2",
+    "drops": [
+        {
+            "name": "Fedora",
+            "id": null,
+            "rate": "1/128",
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Odium shard 2",
+            "id": null,
+            "rate": "1/256",
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Malediction shard 2",
+            "id": null,
+            "rate": "1/256",
+            "qty": 1,
+            "gphr": false
+        }
+    ]
+},
+  "Chaos Fanatic": {
+    "order": 230,
+    "bossTier": "Medium tier",
+    "image": "https://oldschool.runescape.wiki/images/Crazy_archaeologist.png",
+    "location": "Wilderness (west of Lava Maze)",
+    "instanced": false,
+    "wilderness": true,
+    "multiCombat": false,
+    "weakness": "Magic",
+    "combatLevel": 202,
+    "killsPerHour": 60,
+    "petName": "Chaos Elemental Jr. (Chaos Fanatic)",
+    "petRate": "1/1000",
+    "questReqs": "",
+    "skillReqs": "Ranged 65; Magic 65; Prayer 43",
+    "skillReqsParsed": {},
+    "info": "Medium tier | Malediction shard 1 & Malediction shard 2 Odium shard 1 & Odium shard 2",
+    "drops": [
+        {
+            "name": "Odium shard 1",
+            "id": null,
+            "rate": "1/256",
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Malediction shard 1",
+            "id": null,
+            "rate": "1/256",
+            "qty": 1,
+            "gphr": false
+        }
+    ]
+},
   "Brutus": {
     "order": 49,
     "bossTier": "Easy tier",
@@ -18,20 +422,6 @@ const BOSS_DATA = {
     "info": "Easy tier F2P cow boss in Lumbridge cow field. Unlocked after The Ides of Milk quest. Grants double combat XP during the fight. Use cowbell amulet (charged with air runes) to teleport directly to the pen. 25% weakness to earth spells. Hard mode (Demonic Brutus) available after Desert Treasure II via abyssal potato.",
     "drops": [
         {
-            "name": "Mooleta",
-            "id": 33101,
-            "rate": "1/30",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Cow slippers (cosmetic)",
-            "id": 33093,
-            "rate": "1/150",
-            "qty": 1,
-            "gphr": true
-        },
-        {
             "name": "Bottomless milk bucket (empty)",
             "id": 33091,
             "rate": "1/37.5",
@@ -39,9 +429,30 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Cow slippers",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Mooleta",
+            "id": 33101,
+            "rate": "1/30",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Beef",
             "id": 33124,
             "rate": "1/1000",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Cow slippers (cosmetic)",
+            "id": 33093,
+            "rate": "1/150",
             "qty": 1,
             "gphr": true
         }
@@ -68,16 +479,23 @@ const BOSS_DATA = {
     "info": "Easy tier | Tempoross rewards Tome of water",
     "drops": [
         {
-            "name": "Tome of water (empty)",
-            "id": 25576,
-            "rate": "1/1600",
+            "name": "Spirit flakes",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Big harpoonfish",
-            "id": 25559,
-            "rate": "1/1600",
+            "name": "Soaked page",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Fish barrel",
+            "id": 25582,
+            "rate": "1/400",
             "qty": 1,
             "gphr": true
         },
@@ -110,6 +528,13 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Dragon harpoon",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Spirit angler boots",
             "id": 25598,
             "rate": "Bought with spirit flakes",
@@ -117,9 +542,16 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Fish barrel",
-            "id": 25582,
-            "rate": "1/400",
+            "name": "Tome of water (empty)",
+            "id": 25576,
+            "rate": "1/1600",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Big harpoonfish",
+            "id": 25559,
+            "rate": "1/1600",
             "qty": 1,
             "gphr": true
         },
@@ -153,15 +585,29 @@ const BOSS_DATA = {
     "info": "Easy tier | Barrows equipment Runes",
     "drops": [
         {
-            "name": "Dharok's helm",
-            "id": 4716,
+            "name": "Bolt rack",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ahrim's robetop",
+            "id": 4872,
             "rate": "~1/17 per run",
             "qty": 1,
             "gphr": true
         },
         {
-            "name": "Dharok's platebody",
-            "id": 4720,
+            "name": "Ahrim's robeskirt",
+            "id": 4714,
+            "rate": "~1/17 per run",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Karil's leathertop",
+            "id": 4736,
             "rate": "~1/17 per run",
             "qty": 1,
             "gphr": true
@@ -174,20 +620,6 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Dharok's greataxe",
-            "id": 4718,
-            "rate": "~1/17 per run",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Guthan's helm",
-            "id": 4724,
-            "rate": "~1/17 per run",
-            "qty": 1,
-            "gphr": true
-        },
-        {
             "name": "Guthan's platebody",
             "id": 4728,
             "rate": "~1/17 per run",
@@ -195,8 +627,57 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Karil's leatherskirt",
+            "id": 4738,
+            "rate": "~1/17 per run",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Dharok's greataxe",
+            "id": 4718,
+            "rate": "~1/17 per run",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Dharok's platebody",
+            "id": 4720,
+            "rate": "~1/17 per run",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Guthan's chainskirt",
             "id": 4730,
+            "rate": "~1/17 per run",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Verac's plateskirt",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ahrim's hood",
+            "id": 4708,
+            "rate": "~1/17 per run",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Ahrim's staff",
+            "id": 4710,
+            "rate": "~1/17 per run",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Dharok's helm",
+            "id": 4716,
             "rate": "~1/17 per run",
             "qty": 1,
             "gphr": true
@@ -216,20 +697,6 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Karil's leathertop",
-            "id": 4736,
-            "rate": "~1/17 per run",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Karil's leatherskirt",
-            "id": 4738,
-            "rate": "~1/17 per run",
-            "qty": 1,
-            "gphr": true
-        },
-        {
             "name": "Karil's crossbow",
             "id": 4734,
             "rate": "~1/17 per run",
@@ -237,32 +704,60 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Ahrim's hood",
-            "id": 4708,
+            "name": "Torag's platelegs",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Verac's helm",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Verac's flail",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Guthan's helm",
+            "id": 4724,
             "rate": "~1/17 per run",
             "qty": 1,
             "gphr": true
         },
         {
-            "name": "Ahrim's robetop",
-            "id": 4872,
-            "rate": "~1/17 per run",
+            "name": "Torag's platebody",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Ahrim's robeskirt",
-            "id": 4714,
-            "rate": "~1/17 per run",
+            "name": "Torag's helm",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Ahrim's staff",
-            "id": 4710,
-            "rate": "~1/17 per run",
+            "name": "Torag's hammers",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
+        },
+        {
+            "name": "Verac's brassard",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -285,15 +780,15 @@ const BOSS_DATA = {
     "info": "Easy tier | Mole skin Mole claw",
     "drops": [
         {
-            "name": "Mole skin",
-            "id": 7418,
+            "name": "Mole claw",
+            "id": 7416,
             "rate": "1/1",
             "qty": 1,
             "gphr": true
         },
         {
-            "name": "Mole claw",
-            "id": 7416,
+            "name": "Mole skin",
+            "id": 7418,
             "rate": "1/1",
             "qty": 1,
             "gphr": true
@@ -430,29 +925,36 @@ const BOSS_DATA = {
     "info": "Easy tier | Wintertodt rewards Tome of fire",
     "drops": [
         {
-            "name": "Tome of fire (empty)",
-            "id": 20714,
-            "rate": "1/1000",
+            "name": "Burnt page",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Phoenix",
-            "id": 20693,
-            "rate": "1/5000",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Pyromancer hood",
-            "id": 20708,
+            "name": "Pyromancer garb",
+            "id": 20704,
             "rate": "1/150 each",
             "qty": 1,
             "gphr": true
         },
         {
-            "name": "Pyromancer garb",
-            "id": 20704,
+            "name": "Warm gloves",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Bruma torch",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Pyromancer hood",
+            "id": 20708,
             "rate": "1/150 each",
             "qty": 1,
             "gphr": true
@@ -468,6 +970,20 @@ const BOSS_DATA = {
             "name": "Pyromancer boots",
             "id": 20710,
             "rate": "1/150 each",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Tome of fire (empty)",
+            "id": 20714,
+            "rate": "1/1000",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Phoenix",
+            "id": 20693,
+            "rate": "1/5000",
             "qty": 1,
             "gphr": true
         }
@@ -535,11 +1051,25 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Penance skirt",
-            "id": 10555,
-            "rate": "375 pts (each role)",
+            "name": "Granite body",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
+        },
+        {
+            "name": "Granite helm",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Runner boots",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Penance gloves",
@@ -547,6 +1077,48 @@ const BOSS_DATA = {
             "rate": "150 pts (each role)",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Fighter hat",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Penance skirt",
+            "id": 10555,
+            "rate": "375 pts (each role)",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Healer hat",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Runner hat",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ranger hat",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Pet penance queen",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -569,11 +1141,18 @@ const BOSS_DATA = {
     "info": "Medium tier | Dragon hunter wand Hueycoatl hide",
     "drops": [
         {
-            "name": "Dragon hunter wand",
-            "id": 30070,
-            "rate": "1/105",
+            "name": "Huasca seed",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
+        },
+        {
+            "name": "Soiled page",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Hueycoatl hide",
@@ -586,6 +1165,13 @@ const BOSS_DATA = {
             "name": "Tome of earth (empty)",
             "id": 30064,
             "rate": "1/90",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Dragon hunter wand",
+            "id": 30070,
+            "rate": "1/105",
             "qty": 1,
             "gphr": true
         },
@@ -617,6 +1203,13 @@ const BOSS_DATA = {
     "info": "Medium tier | Sarachnis cudgel Giant egg sac",
     "drops": [
         {
+            "name": "Giant egg sac(full)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Sarachnis cudgel",
             "id": 23528,
             "rate": "1/384",
@@ -624,16 +1217,23 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Pristine spider silk",
-            "id": 33133,
-            "rate": "1/50",
+            "name": "Jar of eyes",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
             "name": "Sraracha",
             "id": 25843,
             "rate": "1/3000",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Pristine spider silk",
+            "id": 33133,
+            "rate": "1/50",
             "qty": 1,
             "gphr": true
         }
@@ -689,54 +1289,6 @@ const BOSS_DATA = {
         }
     ]
 },
-  "Crazy archaeologist & Chaos Fanatic": {
-    "order": 230,
-    "bossTier": "Medium tier",
-    "image": "https://oldschool.runescape.wiki/images/Crazy_archaeologist.png",
-    "location": "Wilderness (Forgotten Cemetery / West of Lava Maze)",
-    "instanced": false,
-    "wilderness": true,
-    "multiCombat": false,
-    "weakness": "Ranged / Slash",
-    "combatLevel": 204,
-    "killsPerHour": 60,
-    "petName": "Chaos Elemental Jr. (Chaos Fanatic)",
-    "petRate": "1/1000",
-    "questReqs": "",
-    "skillReqs": "Ranged 65; Magic 65; Prayer 43",
-    "skillReqsParsed": {},
-    "info": "Medium tier | Malediction shard 1 & Malediction shard 2 Odium shard 1 & Odium shard 2",
-    "drops": [
-        {
-            "name": "Malediction shard 1",
-            "id": 11931,
-            "rate": "1/256",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Malediction shard 2",
-            "id": 11932,
-            "rate": "1/256",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Odium shard 1",
-            "id": 11928,
-            "rate": "1/256",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Odium shard 2",
-            "id": 11929,
-            "rate": "1/256",
-            "qty": 1,
-            "gphr": true
-        }
-    ]
-},
   "King Black Dragon": {
     "order": 231,
     "bossTier": "Medium tier",
@@ -756,13 +1308,6 @@ const BOSS_DATA = {
     "info": "Medium tier | Dragon bones Black dragonhide",
     "drops": [
         {
-            "name": "Dragon pickaxe",
-            "id": 11920,
-            "rate": "1/1000",
-            "qty": 1,
-            "gphr": true
-        },
-        {
             "name": "Kbd heads",
             "id": 7980,
             "rate": "1/128",
@@ -770,9 +1315,23 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Draconic visage",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Prince black dragon",
             "id": 12653,
             "rate": "1/3000",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Dragon pickaxe",
+            "id": 11920,
+            "rate": "1/1000",
             "qty": 1,
             "gphr": true
         }
@@ -797,23 +1356,30 @@ const BOSS_DATA = {
     "info": "Medium tier | Moon equipment Blessed bone shards",
     "drops": [
         {
-            "name": "Blood moon helm",
-            "id": 29028,
-            "rate": "1/56 per Blood Moon kill",
+            "name": "Atlatl dart",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dual macuahuitl",
+            "id": 28997,
+            "rate": "1/56 Eclipse Moon",
             "qty": 1,
             "gphr": true
         },
         {
-            "name": "Blood moon chestplate",
-            "id": 29022,
-            "rate": "1/56 per Blood Moon kill",
+            "name": "Blue moon spear",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Blood moon tassets",
-            "id": 29025,
-            "rate": "1/56 per Blood Moon kill",
+            "name": "Eclipse atlatl",
+            "id": 29000,
+            "rate": "1/56 Eclipse Moon",
             "qty": 1,
             "gphr": true
         },
@@ -825,16 +1391,9 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Blue moon chestplate",
-            "id": 29013,
-            "rate": "1/56 per Blue Moon kill",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Blue moon tassets",
-            "id": 29016,
-            "rate": "1/56 per Blue Moon kill",
+            "name": "Blood moon helm",
+            "id": 29028,
+            "rate": "1/56 per Blood Moon kill",
             "qty": 1,
             "gphr": true
         },
@@ -846,6 +1405,20 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Blue moon chestplate",
+            "id": 29013,
+            "rate": "1/56 per Blue Moon kill",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Blood moon chestplate",
+            "id": 29022,
+            "rate": "1/56 per Blood Moon kill",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Eclipse moon chestplate",
             "id": 29004,
             "rate": "1/56 per Eclipse Moon kill",
@@ -853,23 +1426,23 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Blood moon tassets",
+            "id": 29025,
+            "rate": "1/56 per Blood Moon kill",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Blue moon tassets",
+            "id": 29016,
+            "rate": "1/56 per Blue Moon kill",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Eclipse moon tassets",
             "id": 29007,
             "rate": "1/56 per Eclipse Moon kill",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Dual macuahuitl",
-            "id": 28997,
-            "rate": "1/56 Eclipse Moon",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Eclipse atlatl",
-            "id": 29000,
-            "rate": "1/56 Eclipse Moon",
             "qty": 1,
             "gphr": true
         }
@@ -894,16 +1467,23 @@ const BOSS_DATA = {
     "info": "Medium tier | Glacial temotli Pendant of ates",
     "drops": [
         {
-            "name": "Glacial temotli",
-            "id": 29889,
-            "rate": "1/100",
+            "name": "Frozen tear",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
             "name": "Pendant of ates (inert)",
             "id": 29892,
             "rate": "1/25",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Glacial temotli",
+            "id": 29889,
+            "rate": "1/100",
             "qty": 1,
             "gphr": true
         },
@@ -1062,16 +1642,58 @@ const BOSS_DATA = {
     "info": "Medium tier | Elemental crown pieces Prayer upgrades",
     "drops": [
         {
-            "name": "Elemental crown pieces",
+            "name": "Desiccated page",
             "id": null,
-            "rate": "1/75 each",
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
+        },
+        {
+            "name": "Giantsoul amulet",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Deadeye prayer scroll",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Mystic Vigour prayer scroll",
             "id": 30627,
             "rate": "1/75",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Ice element staff crown",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Fire element staff crown",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Bran",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Elemental crown pieces",
+            "id": null,
+            "rate": "1/75 each",
             "qty": 1,
             "gphr": true
         }
@@ -1130,6 +1752,13 @@ const BOSS_DATA = {
     "info": "Hard tier | Dragon pickaxe Dragon 2h sword",
     "drops": [
         {
+            "name": "Pet chaos elemental",
+            "id": 11995,
+            "rate": "1/300",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Dragon pickaxe",
             "id": 11920,
             "rate": "1/256",
@@ -1140,13 +1769,6 @@ const BOSS_DATA = {
             "name": "Dragon 2h sword",
             "id": 7158,
             "rate": "1/64",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Pet chaos elemental",
-            "id": 11995,
-            "rate": "1/300",
             "qty": 1,
             "gphr": true
         }
@@ -1170,6 +1792,13 @@ const BOSS_DATA = {
     "skillReqsParsed": {},
     "info": "Hard tier | Voidwaker blade Dragon pickaxe",
     "drops": [
+        {
+            "name": "Skull of vet'ion",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
         {
             "name": "Voidwaker blade",
             "id": 27684,
@@ -1212,6 +1841,13 @@ const BOSS_DATA = {
     "info": "Hard tier | Voidwaker gem Dragon pickaxe",
     "drops": [
         {
+            "name": "Fangs of venenatis",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Voidwaker gem",
             "id": 27687,
             "rate": "1/360",
@@ -1253,11 +1889,25 @@ const BOSS_DATA = {
     "info": "Hard tier | Berserker ring Archers ring Dagannoth bones",
     "drops": [
         {
+            "name": "Dragon axe",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Berserker ring",
             "id": 6737,
             "rate": "1/128",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Warrior ring",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Archers ring",
@@ -1274,15 +1924,29 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Dagannoth bones",
-            "id": 6729,
-            "rate": "1/1",
+            "name": "Mud battlestaff",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
+        },
+        {
+            "name": "Seercull",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Pet dagannoth rex",
             "id": 12645,
+            "rate": "1/5000 each",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Pet dagannoth supreme",
+            "id": 12643,
             "rate": "1/5000 each",
             "qty": 1,
             "gphr": true
@@ -1295,9 +1959,9 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Pet dagannoth supreme",
-            "id": 12643,
-            "rate": "1/5000 each",
+            "name": "Dagannoth bones",
+            "id": 6729,
+            "rate": "1/1",
             "qty": 1,
             "gphr": true
         }
@@ -1322,9 +1986,23 @@ const BOSS_DATA = {
     "info": "No quest req but needs GWD-tier gear. Drops Spirit Shield, Elysian/Arcane/Spectral sigils. Use a spear or halberd \u2014 all other weapons deal 50% damage.",
     "drops": [
         {
-            "name": "Elysian sigil",
-            "id": 12819,
-            "rate": "1/4095",
+            "name": "Spirit shield",
+            "id": 12829,
+            "rate": "1/64",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Holy elixir",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Spectral sigil",
+            "id": 12823,
+            "rate": "1/1365",
             "qty": 1,
             "gphr": true
         },
@@ -1336,16 +2014,16 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Spectral sigil",
-            "id": 12823,
-            "rate": "1/1365",
+            "name": "Jar of spirits",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Spirit shield",
-            "id": 12829,
-            "rate": "1/64",
+            "name": "Elysian sigil",
+            "id": 12819,
+            "rate": "1/4095",
             "qty": 1,
             "gphr": true
         },
@@ -1391,6 +2069,13 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Jar of sand",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Kalphite princess",
             "id": 12654,
             "rate": "1/3000",
@@ -1420,11 +2105,25 @@ const BOSS_DATA = {
     "info": "Hard tier | Granite dust Granite hammer",
     "drops": [
         {
+            "name": "Granite dust",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Granite gloves",
             "id": 21736,
             "rate": "1/500",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Granite ring",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Granite hammer",
@@ -1434,16 +2133,23 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Jar of stone",
-            "id": 21745,
-            "rate": "1/5000",
+            "name": "Black tourmaline core",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
             "name": "Noon",
             "id": 21748,
             "rate": "1/3000",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Jar of stone",
+            "id": 21745,
+            "rate": "1/5000",
             "qty": 1,
             "gphr": true
         }
@@ -1468,11 +2174,32 @@ const BOSS_DATA = {
     "info": "Hard tier | Ancient shard",
     "drops": [
         {
-            "name": "Uncut onyx",
-            "id": 6571,
-            "rate": "1/1000",
+            "name": "Ancient shard",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dark claw",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Skotos",
+            "id": 21273,
+            "rate": "1/65",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Dark totem",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Jar of darkness",
@@ -1482,9 +2209,9 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Skotos",
-            "id": 21273,
-            "rate": "1/65",
+            "name": "Uncut onyx",
+            "id": 6571,
+            "rate": "1/1000",
             "qty": 1,
             "gphr": true
         }
@@ -1550,6 +2277,27 @@ const BOSS_DATA = {
     "info": "Hard tier | Voidwaker hilt Dragon pickaxe",
     "drops": [
         {
+            "name": "Dragon 2h sword",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dragon pickaxe",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Claws of callisto",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Voidwaker hilt",
             "id": 27681,
             "rate": "1/360",
@@ -1567,56 +2315,6 @@ const BOSS_DATA = {
             "name": "Callisto cub",
             "id": 13178,
             "rate": "1/1500",
-            "qty": 1,
-            "gphr": true
-        }
-    ]
-},
-  "Commander Zilyana (Solo)": {
-    "order": 294,
-    "bossTier": "Hard tier",
-    "image": "https://oldschool.runescape.wiki/images/Commander_Zilyana.png",
-    "location": "God Wars Dungeon (Saradomin's Encampment)",
-    "instanced": true,
-    "wilderness": false,
-    "multiCombat": false,
-    "weakness": "Ranged",
-    "combatLevel": 596,
-    "killsPerHour": 55,
-    "petName": "Zilyana Jr.",
-    "petRate": "1/5000",
-    "questReqs": "",
-    "skillReqs": "Defence 70; Ranged 80; Agility 70",
-    "skillReqsParsed": {
-        "agility": 70
-    },
-    "info": "Hard tier | Armadyl crossbow Saradomin hilt",
-    "drops": [
-        {
-            "name": "Armadyl crossbow",
-            "id": 11785,
-            "rate": "1/508",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Saradomin sword",
-            "id": 11838,
-            "rate": "1/127",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Saradomin hilt",
-            "id": 11814,
-            "rate": "1/508",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Pet zilyana",
-            "id": 12651,
-            "rate": "1/5000",
             "qty": 1,
             "gphr": true
         }
@@ -1687,6 +2385,20 @@ const BOSS_DATA = {
             "rate": "1/3000",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Jar of decay",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Skeletal visage",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -1712,6 +2424,20 @@ const BOSS_DATA = {
     },
     "info": "Elite tier | Zulrah's scales Tanzanite fang Magic fang Serpentine visage",
     "drops": [
+        {
+            "name": "Zulrah's scales",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Zul-andra teleport",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
         {
             "name": "Tanzanite fang",
             "id": 12922,
@@ -1746,6 +2472,20 @@ const BOSS_DATA = {
             "rate": "1/4000",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Tanzanite mutagen",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Magma mutagen",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -1775,11 +2515,25 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Frozen cache",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Ancient icon",
             "id": 27627,
             "rate": "1/50",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Charged ice",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Venator shard",
@@ -1884,23 +2638,37 @@ const BOSS_DATA = {
     "info": "Elite tier | Magus ring Eye of the duke",
     "drops": [
         {
-            "name": "Magus vestige",
-            "id": 28281,
-            "rate": "1/720",
+            "name": "Frozen tablet",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Eye of the duke",
-            "id": 28321,
-            "rate": "1/720",
-            "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
             "name": "Awakener's orb",
             "id": 28334,
             "rate": "1/48.5",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Chromium ingot",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ice quartz",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Eye of the duke",
+            "id": 28321,
+            "rate": "1/720",
             "qty": 1,
             "gphr": true
         },
@@ -1922,6 +2690,13 @@ const BOSS_DATA = {
             "name": "Virtus mask",
             "id": 26241,
             "rate": "1/2160",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Magus vestige",
+            "id": 28281,
+            "rate": "1/720",
             "qty": 1,
             "gphr": true
         },
@@ -1953,6 +2728,27 @@ const BOSS_DATA = {
     "info": "Elite tier | Bellator ring Siren's staff",
     "drops": [
         {
+            "name": "Sirenic tablet",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Shadow quartz",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Siren's staff",
+            "id": 28323,
+            "rate": "1/512",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Bellator vestige",
             "id": 28279,
             "rate": "1/512",
@@ -1960,9 +2756,9 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Siren's staff",
-            "id": 28323,
-            "rate": "1/512",
+            "name": "Wisp",
+            "id": 28246,
+            "rate": "1/2000",
             "qty": 1,
             "gphr": true
         },
@@ -1984,13 +2780,6 @@ const BOSS_DATA = {
             "name": "Virtus mask",
             "id": 26241,
             "rate": "1/1536",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Wisp",
-            "id": 28246,
-            "rate": "1/2000",
             "qty": 1,
             "gphr": true
         }
@@ -2015,6 +2804,27 @@ const BOSS_DATA = {
     "info": "Elite tier | Venator ring Leviathan's lure",
     "drops": [
         {
+            "name": "Scarred tablet",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Smoke quartz",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Leviathan's lure",
+            "id": 28325,
+            "rate": "1/768",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Venator vestige",
             "id": 28283,
             "rate": "1/768",
@@ -2022,9 +2832,9 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Leviathan's lure",
-            "id": 28325,
-            "rate": "1/768",
+            "name": "Lil'viathan",
+            "id": 28252,
+            "rate": "1/2500",
             "qty": 1,
             "gphr": true
         },
@@ -2046,13 +2856,6 @@ const BOSS_DATA = {
             "name": "Virtus mask",
             "id": 26241,
             "rate": "1/2304",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Lil'viathan",
-            "id": 28252,
-            "rate": "1/2500",
             "qty": 1,
             "gphr": true
         }
@@ -2077,6 +2880,27 @@ const BOSS_DATA = {
     "info": "Elite tier | Ultor ring Executioner's axe head",
     "drops": [
         {
+            "name": "Strangled tablet",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Blood quartz",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Executioner's axe head",
+            "id": 28319,
+            "rate": "1/1088",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Ultor vestige",
             "id": 28285,
             "rate": "1/1088",
@@ -2084,9 +2908,9 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Executioner's axe head",
-            "id": 28319,
-            "rate": "1/1088",
+            "name": "Butch",
+            "id": 28248,
+            "rate": "1/3000",
             "qty": 1,
             "gphr": true
         },
@@ -2108,13 +2932,6 @@ const BOSS_DATA = {
             "name": "Virtus mask",
             "id": 26241,
             "rate": "1/3264",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Butch",
-            "id": 28248,
-            "rate": "1/3000",
             "qty": 1,
             "gphr": true
         }
@@ -2143,16 +2960,16 @@ const BOSS_DATA = {
     "info": "Medium tier | Ores and Bars Crystal tool seed",
     "drops": [
         {
-            "name": "Crystal tool seed",
-            "id": 23953,
-            "rate": "1/205.1",
+            "name": "Zalcano shard",
+            "id": 23908,
+            "rate": "1/1500",
             "qty": 1,
             "gphr": true
         },
         {
-            "name": "Zalcano shard",
-            "id": 23908,
-            "rate": "1/1500",
+            "name": "Crystal tool seed",
+            "id": 23953,
+            "rate": "1/205.1",
             "qty": 1,
             "gphr": true
         },
@@ -2183,6 +3000,20 @@ const BOSS_DATA = {
     "skillReqsParsed": {},
     "info": "Hard tier | Crystal shards Crystal armour seed",
     "drops": [
+        {
+            "name": "Gauntlet cape",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Crystal weapon seed",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
         {
             "name": "Crystal armour seed",
             "id": 23956,
@@ -2224,6 +3055,20 @@ const BOSS_DATA = {
     "skillReqsParsed": {},
     "info": "Elite tier | Enhanced crystal weapon seed Crystal armour seed",
     "drops": [
+        {
+            "name": "Gauntlet cape",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Crystal weapon seed",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
         {
             "name": "Crystal armour seed",
             "id": 23956,
@@ -2268,6 +3113,13 @@ const BOSS_DATA = {
     "info": "Medium tier | Trident of the seas Kraken tentacle",
     "drops": [
         {
+            "name": "Kraken tentacle",
+            "id": 12004,
+            "rate": "1/400",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Trident of the seas (full)",
             "id": 11905,
             "rate": "1/512",
@@ -2275,11 +3127,11 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Kraken tentacle",
-            "id": 12004,
-            "rate": "1/400",
+            "name": "Jar of dirt",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
             "name": "Pet kraken",
@@ -2311,11 +3163,60 @@ const BOSS_DATA = {
     "info": "Hard tier | Unsired Abyssal bludgeon",
     "drops": [
         {
+            "name": "Abyssal whip",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Unsired",
             "id": 13273,
             "rate": "1/100",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Abyssal head",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Abyssal dagger",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Bludgeon axon",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Bludgeon spine",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Bludgeon claw",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Jar of miasma",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Abyssal orphan",
@@ -2366,6 +3267,13 @@ const BOSS_DATA = {
             "rate": "1/3000",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Jar of smoke",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -2390,8 +3298,22 @@ const BOSS_DATA = {
     "info": "Hard tier | Primordial crystal Eternal crystal Smouldering stone",
     "drops": [
         {
+            "name": "Key master teleport",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Primordial crystal",
             "id": 13231,
+            "rate": "1/520",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Smouldering stone",
+            "id": 13233,
             "rate": "1/520",
             "qty": 1,
             "gphr": true
@@ -2411,11 +3333,11 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Smouldering stone",
-            "id": 13233,
-            "rate": "1/520",
+            "name": "Jar of souls",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
             "name": "Hellpuppy",
@@ -2445,9 +3367,30 @@ const BOSS_DATA = {
     "info": "Hard tier | Araxyte fang Noxious halberd",
     "drops": [
         {
-            "name": "Araxyte fang",
-            "id": 29799,
-            "rate": "1/600",
+            "name": "Araxyte venom sack",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Spider cave teleport",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Araxyte head",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Noxious blade",
+            "id": 29792,
+            "rate": "1/200",
             "qty": 1,
             "gphr": true
         },
@@ -2466,11 +3409,25 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Noxious blade",
-            "id": 29792,
-            "rate": "1/200",
+            "name": "Araxyte fang",
+            "id": 29799,
+            "rate": "1/600",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Coagulated venom",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Jar of venom",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Nid",
@@ -2502,11 +3459,39 @@ const BOSS_DATA = {
     "info": "Hard tier | Hydra's claw Hydra bones",
     "drops": [
         {
-            "name": "Hydra's claw",
-            "id": 22966,
-            "rate": "1/1001",
+            "name": "Dragon thrownaxe",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
+        },
+        {
+            "name": "Dragon knife",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Hydra's eye",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Alchemical hydra heads",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Hydra's fang",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Hydra leather",
@@ -2523,174 +3508,30 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Hydra's heart",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Hydra's claw",
+            "id": 22966,
+            "rate": "1/1001",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Jar of chemicals",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Ikkle hydra",
             "id": 22746,
             "rate": "1/3000",
-            "qty": 1,
-            "gphr": true
-        }
-    ]
-},
-  "General Graardor (Solo)": {
-    "order": 389,
-    "bossTier": "Elite tier",
-    "image": "https://oldschool.runescape.wiki/images/General_Graardor.png",
-    "location": "God Wars Dungeon (Bandos's Stronghold)",
-    "instanced": true,
-    "wilderness": false,
-    "multiCombat": false,
-    "weakness": "Ranged",
-    "combatLevel": 624,
-    "killsPerHour": 55,
-    "petName": "Graardor Jr.",
-    "petRate": "1/5000",
-    "questReqs": "",
-    "skillReqs": "Attack 85; Strength 85; Defence 80; Ranged 80",
-    "skillReqsParsed": {
-        "strength": 70
-    },
-    "info": "Elite tier | Bandos armour Bandos hilt",
-    "drops": [
-        {
-            "name": "Bandos chestplate",
-            "id": 11832,
-            "rate": "1/381",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Bandos tassets",
-            "id": 11834,
-            "rate": "1/381",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Bandos boots",
-            "id": 11836,
-            "rate": "1/381",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Bandos hilt",
-            "id": 11812,
-            "rate": "1/508",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Pet general graardor",
-            "id": 12650,
-            "rate": "1/5000",
-            "qty": 1,
-            "gphr": true
-        }
-    ]
-},
-  "K'ril Tsutsaroth (Solo)": {
-    "order": 390,
-    "bossTier": "Hard tier",
-    "image": "https://oldschool.runescape.wiki/images/K%27ril_Tsutsaroth.png",
-    "location": "God Wars Dungeon (Zamorak's Fortress)",
-    "instanced": true,
-    "wilderness": false,
-    "multiCombat": false,
-    "weakness": "Ranged",
-    "combatLevel": 650,
-    "killsPerHour": 55,
-    "petName": "K'ril Jr.",
-    "petRate": "1/5000",
-    "questReqs": "",
-    "skillReqs": "Attack 85; Strength 85; Defence 80; Ranged 80",
-    "skillReqsParsed": {
-        "strength": 70,
-        "agility": 70
-    },
-    "info": "Hard tier | Zamorakian hasta Staff of the dead Zamorak hilt",
-    "drops": [
-        {
-            "name": "Zamorakian spear",
-            "id": 11824,
-            "rate": "1/127",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Staff of the dead",
-            "id": 11791,
-            "rate": "1/508",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Zamorak hilt",
-            "id": 11816,
-            "rate": "1/508",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Pet k'ril tsutsaroth",
-            "id": 12652,
-            "rate": "1/5000",
-            "qty": 1,
-            "gphr": true
-        }
-    ]
-},
-  "Kree'arra (Solo)": {
-    "order": 392,
-    "bossTier": "Elite tier",
-    "image": "https://oldschool.runescape.wiki/images/Kree%27arra.png",
-    "location": "God Wars Dungeon (Armadyl's Eyrie)",
-    "instanced": true,
-    "wilderness": false,
-    "multiCombat": false,
-    "weakness": "Magic",
-    "combatLevel": 580,
-    "killsPerHour": 40,
-    "petName": "Kree'arra Jr.",
-    "petRate": "1/5000",
-    "questReqs": "",
-    "skillReqs": "Defence 80; Ranged 85",
-    "skillReqsParsed": {
-        "ranged": 70
-    },
-    "info": "Elite tier | Armadyl armour Armadyl hilt",
-    "drops": [
-        {
-            "name": "Armadyl helmet",
-            "id": 11826,
-            "rate": "1/381",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Armadyl chestplate",
-            "id": 11828,
-            "rate": "1/381",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Armadyl chainskirt",
-            "id": 11830,
-            "rate": "1/381",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Armadyl hilt",
-            "id": 11810,
-            "rate": "1/508",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Pet kree'arra",
-            "id": 12649,
-            "rate": "1/5000",
             "qty": 1,
             "gphr": true
         }
@@ -2715,6 +3556,27 @@ const BOSS_DATA = {
     "info": "Master tier | Avernic treads Eye of ayak Mokhaiotl cloth",
     "drops": [
         {
+            "name": "Demon tear",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Mokhaiotl waystone",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Mokhaiotl cloth",
+            "id": 31109,
+            "rate": "1/2500",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Avernic treads",
             "id": 31088,
             "rate": "~1/1350",
@@ -2725,13 +3587,6 @@ const BOSS_DATA = {
             "name": "Eye of ayak",
             "id": 31113,
             "rate": "1/2000",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Mokhaiotl cloth",
-            "id": 31109,
-            "rate": "1/2500",
             "qty": 1,
             "gphr": true
         },
@@ -2763,11 +3618,74 @@ const BOSS_DATA = {
     "info": "Elite tier | Raids 3 Uniques",
     "drops": [
         {
-            "name": "Tumeken's shadow (uncharged)",
-            "id": 27275,
+            "name": "Thread of elidinis",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Cache of runes",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Breach of the scarab",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Jewel of the sun",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Eye of the corruptor",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Osmumten's fang",
+            "id": 26219,
             "rate": "invocation-weighted unique",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Masori crafting kit",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Lightbearer",
+            "id": 25975,
+            "rate": "invocation-weighted unique",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Elidinis' ward",
+            "id": 25985,
+            "rate": "invocation-weighted unique",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Icthlarin's shroud (tier 1)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Masori mask",
@@ -2791,25 +3709,102 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Osmumten's fang",
-            "id": 26219,
+            "name": "Jewel of amascut",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Menaphite ornament kit",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Tumeken's shadow (uncharged)",
+            "id": 27275,
             "rate": "invocation-weighted unique",
             "qty": 1,
             "gphr": true
         },
         {
-            "name": "Lightbearer",
-            "id": 25975,
-            "rate": "invocation-weighted unique",
+            "name": "Cursed phalanx",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Elidinis' ward",
-            "id": 25985,
-            "rate": "invocation-weighted unique",
+            "name": "Tumeken's guardian",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
+        },
+        {
+            "name": "Ancient remnant",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Remnant of ba-ba",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Remnant of zebak",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Remnant of akkha",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Icthlarin's shroud (tier 2)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Remnant of kephri",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Icthlarin's shroud (tier 3)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Icthlarin's shroud (tier 4)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Icthlarin's shroud (tier 5)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -2832,9 +3827,30 @@ const BOSS_DATA = {
     "info": "Master tier | Raids 1 Uniques",
     "drops": [
         {
-            "name": "Twisted bow",
-            "id": 20997,
-            "rate": "~1/34.5 unique",
+            "name": "Dark relic",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Torn prayer scroll",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dexterous prayer scroll",
+            "id": 21034,
+            "rate": "~1/3.45",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Arcane prayer scroll",
+            "id": 21079,
+            "rate": "~1/3.45",
             "qty": 1,
             "gphr": true
         },
@@ -2846,11 +3862,25 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Dragon hunter crossbow",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Dragon claws",
             "id": 13652,
             "rate": "~1/23 unique",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Dinh's bulwark",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Ancestral hat",
@@ -2874,16 +3904,23 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Dexterous prayer scroll",
-            "id": 21034,
-            "rate": "~1/3.45",
+            "name": "Twisted ancestral colour kit",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Arcane prayer scroll",
-            "id": 21079,
-            "rate": "~1/3.45",
+            "name": "Onyx",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Twisted bow",
+            "id": 20997,
+            "rate": "~1/34.5 unique",
             "qty": 1,
             "gphr": true
         },
@@ -2900,71 +3937,55 @@ const BOSS_DATA = {
             "rate": "~1/34.5",
             "qty": 1,
             "gphr": true
-        }
-    ]
-},
-  "Nex (Small teams)": {
-    "order": 436,
-    "bossTier": "Elite tier",
-    "image": "https://oldschool.runescape.wiki/images/Nex.png",
-    "location": "God Wars Dungeon (Ancient Prison)",
-    "instanced": false,
-    "wilderness": false,
-    "multiCombat": true,
-    "weakness": "Ranged",
-    "combatLevel": 1001,
-    "killsPerHour": 8,
-    "petName": "Nexling",
-    "petRate": "1/500",
-    "questReqs": "",
-    "skillReqs": "Attack 90; Strength 90; Defence 90; Ranged 90; Magic 80",
-    "skillReqsParsed": {
-        "strength": 70,
-        "agility": 70
-    },
-    "info": "Elite tier | Torva armour Nihil horn Zaryte vambraces",
-    "drops": [
-        {
-            "name": "Torva full helm (damaged)",
-            "id": 26376,
-            "rate": "1/258",
-            "qty": 1,
-            "gphr": true
         },
         {
-            "name": "Torva platebody (damaged)",
-            "id": 26378,
-            "rate": "1/258",
+            "name": "Olmlet",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Torva platelegs (damaged)",
-            "id": 26380,
-            "rate": "1/258",
+            "name": "Xeric's guard",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Nihil horn",
-            "id": 26372,
-            "rate": "1/258",
+            "name": "Metamorphic dust",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Zaryte vambraces",
-            "id": 26235,
-            "rate": "1/172",
+            "name": "Xeric's warrior",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
-            "name": "Nexling",
-            "id": 26348,
-            "rate": "1/500",
+            "name": "Xeric's sentinel",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
+        },
+        {
+            "name": "Xeric's general",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Xeric's champion",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -2987,6 +4008,27 @@ const BOSS_DATA = {
     "info": "Master tier | Inquisitor's equipment Nightmare staff Nightmare staff orbs",
     "drops": [
         {
+            "name": "Slepey tablet",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Parasitic egg",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Nightmare staff",
+            "id": 24422,
+            "rate": "1/300",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Inquisitor's great helm",
             "id": 24419,
             "rate": "1/420",
@@ -3008,6 +4050,13 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Little nightmare",
+            "id": 24491,
+            "rate": "1/4000",
+            "qty": 1,
+            "gphr": true
+        },
+        {
             "name": "Inquisitor's mace",
             "id": 24417,
             "rate": "1/750",
@@ -3015,11 +4064,11 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Nightmare staff",
-            "id": 24422,
-            "rate": "1/300",
+            "name": "Jar of dreams",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
             "name": "Harmonised orb",
@@ -3039,13 +4088,6 @@ const BOSS_DATA = {
             "name": "Eldritch orb",
             "id": 24517,
             "rate": "1/960",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Little nightmare",
-            "id": 24491,
-            "rate": "1/4000",
             "qty": 1,
             "gphr": true
         }
@@ -3070,25 +4112,11 @@ const BOSS_DATA = {
     "info": "Master tier | Raids 2 Uniques",
     "drops": [
         {
-            "name": "Scythe of vitur (uncharged)",
-            "id": 22486,
-            "rate": "1/19",
+            "name": "Vial of blood",
+            "id": null,
+            "rate": null,
             "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Ghrazi rapier",
-            "id": 22324,
-            "rate": "1/9.5",
-            "qty": 1,
-            "gphr": true
-        },
-        {
-            "name": "Sanguinesti staff (uncharged)",
-            "id": 22481,
-            "rate": "1/9.5",
-            "qty": 1,
-            "gphr": true
+            "gphr": false
         },
         {
             "name": "Avernic defender hilt",
@@ -3098,9 +4126,9 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Justiciar faceguard",
-            "id": 22326,
-            "rate": "1/9.5 each",
+            "name": "Ghrazi rapier",
+            "id": 22324,
+            "rate": "1/9.5",
             "qty": 1,
             "gphr": true
         },
@@ -3119,11 +4147,88 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Justiciar faceguard",
+            "id": 22326,
+            "rate": "1/9.5 each",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Sanguinesti staff (uncharged)",
+            "id": 22481,
+            "rate": "1/9.5",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Sinhaza shroud tier 1",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Lil' zik",
             "id": 25752,
             "rate": "1/650",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Scythe of vitur (uncharged)",
+            "id": 22486,
+            "rate": "1/19",
+            "qty": 1,
+            "gphr": true
+        },
+        {
+            "name": "Holy ornament kit",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sinhaza shroud tier 2",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sanguine ornament kit",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sanguine dust",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sinhaza shroud tier 3",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sinhaza shroud tier 4",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sinhaza shroud tier 5",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -3146,11 +4251,53 @@ const BOSS_DATA = {
     "info": "Master tier | Dizana's quiver",
     "drops": [
         {
+            "name": "Sunfire splinters",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Uncut onyx",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Dizana's quiver (uncharged)",
             "id": 28826,
             "rate": "Always (wave 12)",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Echo crystal",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sunfire fanatic cuirass",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sunfire fanatic helm",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sunfire fanatic chausses",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Tonalztics of ralos (uncharged)",
@@ -3187,9 +4334,51 @@ const BOSS_DATA = {
     "info": "Master tier | Oathplate armour Soulflame horn",
     "drops": [
         {
-            "name": "Oathplate helm",
-            "id": 30750,
-            "rate": "1/600",
+            "name": "Oathplate shards",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Barrel of demonic tallow (full)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Chasm teleport scroll",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Forgotten lockbox",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dossier",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Rite of vile transference",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Soulflame horn",
+            "id": 30759,
+            "rate": "1/300",
             "qty": 1,
             "gphr": true
         },
@@ -3208,11 +4397,18 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
-            "name": "Soulflame horn",
-            "id": 30759,
-            "rate": "1/300",
+            "name": "Oathplate helm",
+            "id": 30750,
+            "rate": "1/600",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Yami",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -3269,6 +4465,83 @@ const BOSS_DATA = {
     "info": "Grandmaster Tier | Twisted ancestral colour kit , Metamorphic dust , Raids 1 Uniques",
     "drops": [
         {
+            "name": "Dark relic",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Torn prayer scroll",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dexterous prayer scroll",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Arcane prayer scroll",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Twisted buckler",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dragon hunter crossbow",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dragon claws",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Dinh's bulwark",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ancestral hat",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ancestral robe top",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ancestral robe bottom",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Twisted ancestral colour kit",
             "id": 24670,
             "rate": "1/75",
@@ -3276,11 +4549,81 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Onyx",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Twisted bow",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Elder maul",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Kodai insignia",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Olmlet",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Xeric's guard",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Metamorphic dust",
             "id": 22386,
             "rate": "1/400",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Xeric's warrior",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Xeric's sentinel",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Xeric's general",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Xeric's champion",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -3303,11 +4646,53 @@ const BOSS_DATA = {
     "info": "Grandmaster Tier | Cursed phalanx , Raids 3 Uniques",
     "drops": [
         {
+            "name": "Thread of elidinis",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Cache of runes",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Breach of the scarab",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Jewel of the sun",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Eye of the corruptor",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Osmumten's fang",
             "id": 26219,
             "rate": "1/5.5",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Masori crafting kit",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Lightbearer",
@@ -3322,6 +4707,13 @@ const BOSS_DATA = {
             "rate": "1/5.5",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Icthlarin's shroud (tier 1)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Masori mask",
@@ -3345,11 +4737,102 @@ const BOSS_DATA = {
             "gphr": true
         },
         {
+            "name": "Jewel of amascut",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Menaphite ornament kit",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Tumeken's shadow (uncharged)",
             "id": 27275,
             "rate": "1/16.5",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Cursed phalanx",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Tumeken's guardian",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ancient remnant",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Remnant of ba-ba",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Remnant of zebak",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Remnant of akkha",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Icthlarin's shroud (tier 2)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Remnant of kephri",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Icthlarin's shroud (tier 3)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Icthlarin's shroud (tier 4)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Icthlarin's shroud (tier 5)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },
@@ -3372,11 +4855,88 @@ const BOSS_DATA = {
     "info": "Grandmaster Tier | Holy ornament kit , Sanguine ornament kit , Sanguine dust , Raids 2 Uniques",
     "drops": [
         {
+            "name": "Vial of blood",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Avernic defender hilt",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Ghrazi rapier",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Justiciar chestguard",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Justiciar legguards",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Justiciar faceguard",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sanguinesti staff (uncharged)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sinhaza shroud tier 1",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Lil' zik",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Scythe of vitur (uncharged)",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
             "name": "Holy ornament kit",
             "id": 25742,
             "rate": "1/100",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Sinhaza shroud tier 2",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         },
         {
             "name": "Sanguine ornament kit",
@@ -3391,6 +4951,27 @@ const BOSS_DATA = {
             "rate": "1/275",
             "qty": 1,
             "gphr": true
+        },
+        {
+            "name": "Sinhaza shroud tier 3",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sinhaza shroud tier 4",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
+        },
+        {
+            "name": "Sinhaza shroud tier 5",
+            "id": null,
+            "rate": null,
+            "qty": 1,
+            "gphr": false
         }
     ]
 },

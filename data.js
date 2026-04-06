@@ -3145,12 +3145,43 @@ const SPINE_DATA = [
   },
   {
     "order": 230,
-    "name": "Crazy archaeologist & Chaos Fanatic",
+    "name": "Crazy Archaeologist",
     "type": "Boss",
     "questPrereqs": "",
     "skillReqs": "Ranged 65; Magic 65; Prayer 43",
     "qp": 0,
-    "info": "Medium tier | Malediction shard 1 & Malediction shard 2 Odium shard 1 & Odium shard 2",
+    "info": "Medium tier wilderness boss. Drops Fedora, Odium shard 2, Malediction shard 2. Located at Forgotten Cemetery.",
+    "location": "",
+    "entryType": "boss",
+    "bossTier": "Medium tier",
+    "notableDrops": [
+      [
+        "Malediction shard 1",
+        "1/256"
+      ],
+      [
+        "Malediction shard 2",
+        "1/256"
+      ],
+      [
+        "Odium shard 1",
+        "1/256"
+      ],
+      [
+        "Odium shard 2",
+        "1/256"
+      ]
+    ],
+    "kc": 0
+  },
+  {
+    "order": 231,
+    "name": "Chaos Fanatic",
+    "type": "Boss",
+    "questPrereqs": "",
+    "skillReqs": "Ranged 65; Magic 65; Prayer 43",
+    "qp": 0,
+    "info": "Medium tier wilderness boss. Drops Odium shard 1, Malediction shard 1, Anarchy staff. Located west of Lava Maze.",
     "location": "",
     "entryType": "boss",
     "bossTier": "Medium tier",
@@ -4274,7 +4305,7 @@ const SPINE_DATA = [
   },
   {
     "order": 294,
-    "name": "Commander Zilyana (Solo)",
+    "name": "Commander Zilyana",
     "type": "Boss",
     "questPrereqs": "",
     "skillReqs": "Defence 70; Ranged 80; Agility 70",
@@ -5906,7 +5937,7 @@ const SPINE_DATA = [
   },
   {
     "order": 389,
-    "name": "General Graardor (Solo)",
+    "name": "General Graardor",
     "type": "Boss",
     "questPrereqs": "",
     "skillReqs": "Attack 85; Strength 85; Defence 80; Ranged 80",
@@ -5941,7 +5972,7 @@ const SPINE_DATA = [
   },
   {
     "order": 390,
-    "name": "K'ril Tsutsaroth (Solo)",
+    "name": "K'ril Tsutsaroth",
     "type": "Boss",
     "questPrereqs": "",
     "skillReqs": "Attack 85; Strength 85; Defence 80; Ranged 80",
@@ -5985,7 +6016,7 @@ const SPINE_DATA = [
   },
   {
     "order": 392,
-    "name": "Kree'arra (Solo)",
+    "name": "Kree'arra",
     "type": "Boss",
     "questPrereqs": "",
     "skillReqs": "Defence 80; Ranged 85",
@@ -6665,7 +6696,7 @@ const SPINE_DATA = [
   },
   {
     "order": 436,
-    "name": "Nex (Small teams)",
+    "name": "Nex",
     "type": "Boss",
     "questPrereqs": "",
     "skillReqs": "Attack 90; Strength 90; Defence 90; Ranged 90; Magic 80",
