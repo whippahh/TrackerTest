@@ -3887,8 +3887,9 @@ function renderClogOverview(main) {
   var search = (document.getElementById('clog-search') || {}).value || '';
   search = search.toLowerCase().trim();
   if (search) {
-    // Filter sources to only those containing items matching the search
+    // Match source name OR any item within the source
     sources = sources.filter(function(s) {
+      if (s.toLowerCase().indexOf(search) !== -1) return true;
       return getSourceItems(s).some(function(i) {
         return i.name.toLowerCase().indexOf(search) !== -1;
       });
@@ -3920,13 +3921,19 @@ function renderClogOverview(main) {
       var pct = total > 0 ? Math.round((got / total) * 100) : 0;
       var progColor = pct === 100 ? '#3d9e3d' : pct >= 50 ? '#8a9e3d' : pct >= 25 ? '#c8a84b' : '#8b6030';
       var isDone = got === total && total > 0;
-      // When search active, show how many items matched
+      // When search active, show why this source matched
       var matchBadge = '';
       if (search) {
+        var sourceMatch = src.toLowerCase().indexOf(search) !== -1;
         var matchCount = items.filter(function(i) {
           return i.name.toLowerCase().indexOf(search) !== -1;
         }).length;
-        matchBadge = '<div class="clog-match-badge">' + matchCount + ' match' + (matchCount !== 1 ? 'es' : '') + '</div>';
+        if (sourceMatch && matchCount > 0) {
+          matchBadge = '<div class="clog-match-badge">' + matchCount + ' item' + (matchCount !== 1 ? 's' : '') + ' match</div>';
+        } else if (matchCount > 0) {
+          matchBadge = '<div class="clog-match-badge">' + matchCount + ' item' + (matchCount !== 1 ? 's' : '') + ' match</div>';
+        }
+        // If source name matched but no items, no badge needed — the name itself is the match
       }
       html += '<div class="clog-overview-card' + (isDone ? ' ov-done' : '') + '" onclick="setClogSource(\'' + src.replace(/'/g, "\\'") + '\')">' +
         '<div class="clog-overview-name">' + src + '</div>' +
