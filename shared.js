@@ -1014,6 +1014,16 @@ function toggleDone(order) {
       const qpInput = document.getElementById('qp-input');
       if (qpInput) qpInput.value = playerQP;
     }
+    // For bosses, un-mark all drops
+    if (item && (item.type === 'Boss' || item.entryType === 'boss')) {
+      var rich = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[item.name] : null;
+      var drops = rich && rich.drops ? rich.drops : (item.notableDrops || []).map(function(d){ return {name: d[0]}; });
+      drops.forEach(function(d) {
+        var key = order + '-' + d.name;
+        delete obtainedDrops[key];
+        syncDropToClog(d.name, false);
+      });
+    }
   } else {
     completedSet.add(order);
     if (item && item.qp > 0) {
@@ -1021,10 +1031,22 @@ function toggleDone(order) {
       const qpInput = document.getElementById('qp-input');
       if (qpInput) qpInput.value = playerQP;
     }
+    // For bosses, mark all drops as obtained
+    if (item && (item.type === 'Boss' || item.entryType === 'boss')) {
+      var rich2 = (typeof BOSS_DATA !== 'undefined') ? BOSS_DATA[item.name] : null;
+      var drops2 = rich2 && rich2.drops ? rich2.drops : (item.notableDrops || []).map(function(d){ return {name: d[0]}; });
+      drops2.forEach(function(d) {
+        var key = order + '-' + d.name;
+        obtainedDrops[key] = true;
+        syncDropToClog(d.name, true);
+      });
+    }
   }
   saveToStorage();
   renderTable();
   updateProgress();
+  // Refresh boss card if on bosses page
+  if (document.getElementById('bt-grid')) refreshBossCard(order);
 }
 
 function markTierDone(tierId, e) {
@@ -1340,6 +1362,9 @@ function openDetail(order) {
   }
 
   const done = completedSet.has(item.order);
+  // Check if we're on the bosses standalone page (planner overlay doesn't exist here)
+  var onBossesPage = !!document.getElementById('bt-grid');
+
   document.getElementById('detail-actions').innerHTML = `
     <div class="detail-actions-row">
       <button class="detail-action-btn detail-action-primary" onclick="toggleDone(${item.order}); closeDetailBtn()">
@@ -1347,12 +1372,10 @@ function openDetail(order) {
       </button>
     </div>
     <div class="detail-actions-row detail-actions-secondary">
-      <button class="detail-action-btn detail-action-ghost" onclick="buildPathTo(${item.order})" title="Find all incomplete prerequisites and add to Custom Path">
-        🗺 Build Path
-      </button>
-      <button class="detail-action-btn detail-action-ghost" onclick="showDownstreamTree(${item.order})" title="See what completing this unlocks">
-        ⚔ What This Unlocks
-      </button>
+      ${!onBossesPage ? `
+        <button class="detail-action-btn detail-action-ghost" onclick="buildPathTo(${item.order})" title="Find all incomplete prerequisites and add to Custom Path">🗺 Build Path</button>
+        <button class="detail-action-btn detail-action-ghost" onclick="showDownstreamTree(${item.order})" title="See what completing this unlocks">⚔ What This Unlocks</button>
+      ` : ''}
       ${isBoss ? `<button class="detail-action-btn detail-action-ghost" onclick="generateBossCard(${item.order})" title="Download shareable progress image">📤 Share</button>` : ''}
       ${item.source ? `<a href="${item.source}" target="_blank" style="text-decoration:none"><button class="detail-action-btn detail-action-ghost">Guide ↗</button></a>` : ''}
     </div>
@@ -4601,7 +4624,6 @@ function scoreRotation(spineItem, rich) {
   var drops = rich.drops || [];
   var kc = bossKC[spineItem.order] || 0;
 
-  // Count missing drops and their expected kill cost
   var missingDrops = [];
   var remainingExpected = 0;
   var totalExpected = 0;
@@ -4627,24 +4649,25 @@ function scoreRotation(spineItem, rich) {
 
   var completionPct = totalDrops > 0 ? doneDrops / totalDrops : 0;
 
-  // GP/hr (null if not calculable)
-  var gphr = calcBossGpHr(rich) || 0;
+  // Tier weight — prefer lower tiers (more accessible) when score is otherwise equal
+  var tierWeights = { 'easy': 6, 'medium': 5, 'hard': 4, 'elite': 3, 'master': 2, 'grandmaster': 1 };
+  var tierKey = (spineItem.bossTier || '').toLowerCase().replace(' tier','').trim();
+  var tierWeight = tierWeights[tierKey] || 3;
 
-  // Efficiency score: value density = GP/hr normalised + completion progress bonus
-  // We want bosses that are: high GP/hr, nearly complete, and have meaningful drops left
-  var efficiencyScore = gphr / 1000000; // normalise to millions
-  var completionBonus = completionPct * 3; // weight completion heavily
-  var kcBonus = kc > 0 ? 1 : 0; // already started
-  var score = efficiencyScore + completionBonus + kcBonus;
+  // Score: completion progress is primary, tier accessibility is secondary
+  // KC started bonus keeps active grinds near the top
+  var completionBonus = completionPct * 5;
+  var kcBonus = kc > 0 ? 1.5 : 0;
+  var score = completionBonus + kcBonus + (tierWeight * 0.3);
 
   // Category
   var category;
   if (completionPct >= 0.5 && missingDrops.length > 0) {
-    category = 'priority'; // close to finishing
-  } else if (gphr > 0 && missingDrops.length > 0) {
-    category = 'efficiency'; // good GP with drops to get
+    category = 'priority';
+  } else if (kc > 0 && missingDrops.length > 0) {
+    category = 'efficiency'; // rename effectively to "In Progress"
   } else if (kc === 0 && missingDrops.length > 0) {
-    category = 'unlock'; // never touched, drops available
+    category = 'unlock';
   } else {
     category = 'other';
   }
@@ -4658,20 +4681,18 @@ function scoreRotation(spineItem, rich) {
     totalDrops: totalDrops,
     completionPct: completionPct,
     remainingExpected: remainingExpected,
-    gphr: gphr,
     score: score,
     category: category
   };
 }
-
 function renderRotation() {
   var body = document.getElementById('bt-rotation-body');
   if (!body) return;
 
-  var canKillOnly  = document.getElementById('rot-cankill-only') && document.getElementById('rot-cankill-only').checked;
-  var missingOnly  = document.getElementById('rot-missing-only') && document.getElementById('rot-missing-only').checked;
-  var startedOnly  = document.getElementById('rot-started-only') && document.getElementById('rot-started-only').checked;
-  var hasStats     = Object.keys(playerStats).length > 0;
+  var canKillOnly = document.getElementById('rot-cankill-only') && document.getElementById('rot-cankill-only').checked;
+  var missingOnly = document.getElementById('rot-missing-only') && document.getElementById('rot-missing-only').checked;
+  var startedOnly = document.getElementById('rot-started-only') && document.getElementById('rot-started-only').checked;
+  var hasStats    = Object.keys(playerStats).length > 0;
 
   var allBosses = SPINE_DATA.filter(function(item) {
     return item.type === 'Boss' || item.entryType === 'boss';
@@ -4695,7 +4716,6 @@ function renderRotation() {
     return;
   }
 
-  // Sort: priority first (nearly complete), then by score desc
   var catOrder = { priority: 0, efficiency: 1, unlock: 2, other: 3 };
   scored.sort(function(a, b) {
     var catDiff = catOrder[a.category] - catOrder[b.category];
@@ -4703,10 +4723,8 @@ function renderRotation() {
     return b.score - a.score;
   });
 
-  // Render — show top 15
   var top = scored.slice(0, 15);
-
-  var catLabels = { priority: '🎯 Close to Completion', efficiency: '💰 Best Efficiency', unlock: '🔓 Not Yet Started', other: '' };
+  var catLabels = { priority: '🎯 Close to Completion', efficiency: '⚔ In Progress', unlock: '🔓 Not Yet Started', other: '' };
   var lastCat = null;
 
   var html = top.map(function(s) {
@@ -4719,7 +4737,6 @@ function renderRotation() {
     var pct = Math.round(s.completionPct * 100);
     var tierClass = (s.spine.bossTier || '').toLowerCase().replace(' tier','').trim();
 
-    // Top 3 missing drops to show
     var topMissing = s.missingDrops.slice(0, 3).map(function(d) {
       var dryInfo = s.kc > 0 ? getDryInfo(d, s.kc) : null;
       var dryHtml = dryInfo && dryInfo.prob >= 0.5
@@ -4729,7 +4746,6 @@ function renderRotation() {
     }).join('');
     if (s.missingDrops.length > 3) topMissing += '<span class="rot-drop rot-drop-more">+' + (s.missingDrops.length - 3) + ' more</span>';
 
-    var gphrStr = s.gphr ? '<span class="rot-gphr">' + fmtGpHr(s.gphr) + '</span>' : '';
     var kcStr = s.kc > 0 ? '<span class="rot-kc">' + s.kc.toLocaleString() + ' KC</span>' : '';
     var expectedStr = s.remainingExpected > 0
       ? '<span class="rot-expected">~' + Math.round(s.remainingExpected).toLocaleString() + ' kills to complete</span>'
@@ -4743,7 +4759,7 @@ function renderRotation() {
             '<span>' + s.spine.name + '</span>' +
             '<span class="boss-tier tier-' + tierClass + '" style="font-size:0.65rem;margin-left:0.4rem">' + (s.spine.bossTier || '') + '</span>' +
           '</div>' +
-          '<div class="rot-meta">' + kcStr + gphrStr + expectedStr + '</div>' +
+          '<div class="rot-meta">' + kcStr + expectedStr + '</div>' +
           '<div class="rot-drops">' + (topMissing || '<span class="rot-drop" style="color:var(--text-muted)">All drops obtained</span>') + '</div>' +
         '</div>' +
         '<div class="rot-bar-wrap">' +
@@ -4755,9 +4771,6 @@ function renderRotation() {
 
   body.innerHTML = html;
 }
-
-// Re-render rotation whenever KC changes (if panel is open)
-// Hash-based page routing removed — each page is now a standalone HTML file.
 
 
 
