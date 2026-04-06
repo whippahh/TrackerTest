@@ -215,8 +215,8 @@ function collectSpineItemIds() {
   return Array.from(ids).sort(function(a, b) { return a - b; });
 }
 
-var GE_CACHE_KEY = 'ps_ge_prices_v2'; // bump version to bust old cache
-var GE_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in ms
+var GE_CACHE_KEY = 'ps_ge_prices_v3';
+var GE_CACHE_TTL = 24 * 60 * 60 * 1000;
 
 async function fetchGEPrices() {
   // Check localStorage cache first
@@ -226,7 +226,6 @@ async function fetchGEPrices() {
       var parsed = JSON.parse(cached);
       if (parsed && parsed.ts && (Date.now() - parsed.ts) < GE_CACHE_TTL && parsed.data) {
         window.GE_PRICES = parsed.data;
-        // Defer surface refresh until after initial render
         setTimeout(refreshGEPriceSurfaces, 0);
         return;
       }
@@ -234,23 +233,16 @@ async function fetchGEPrices() {
   } catch(e) {}
 
   try {
-    var ids = collectSpineItemIds();
-    if (!ids.length) { window.GE_PRICES = {}; return; }
-
-    var url = 'https://prices.runescape.wiki/api/v1/latest?id=' + ids.join(',');
-    var resp = await fetch(url, {
-      headers: { 'User-Agent': 'ProgressScape/1.0 (progressscape.net; progression tracker)' }
+    // Fetch ALL prices at once — simpler, cheaper for the wiki, no ID limit issues
+    var resp = await fetch('https://prices.runescape.wiki/api/v1/osrs/latest', {
+      headers: { 'User-Agent': 'ProgressScape/1.0 (progressscape.net; OSRS progression tracker)' }
     });
     if (!resp.ok) { window.GE_PRICES = {}; return; }
-
     var json = await resp.json();
     window.GE_PRICES = json.data || {};
-
-    // Cache with timestamp
     try {
       localStorage.setItem(GE_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: window.GE_PRICES }));
     } catch(e) {}
-
     refreshGEPriceSurfaces();
   } catch (e) {
     window.GE_PRICES = {};
