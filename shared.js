@@ -3887,7 +3887,12 @@ function renderClogOverview(main) {
   var search = (document.getElementById('clog-search') || {}).value || '';
   search = search.toLowerCase().trim();
   if (search) {
-    sources = sources.filter(function(s) { return s.toLowerCase().indexOf(search) !== -1; });
+    // Filter sources to only those containing items matching the search
+    sources = sources.filter(function(s) {
+      return getSourceItems(s).some(function(i) {
+        return i.name.toLowerCase().indexOf(search) !== -1;
+      });
+    });
   }
 
   // Split into completed vs in-progress vs not-started
@@ -3915,8 +3920,17 @@ function renderClogOverview(main) {
       var pct = total > 0 ? Math.round((got / total) * 100) : 0;
       var progColor = pct === 100 ? '#3d9e3d' : pct >= 50 ? '#8a9e3d' : pct >= 25 ? '#c8a84b' : '#8b6030';
       var isDone = got === total && total > 0;
+      // When search active, show how many items matched
+      var matchBadge = '';
+      if (search) {
+        var matchCount = items.filter(function(i) {
+          return i.name.toLowerCase().indexOf(search) !== -1;
+        }).length;
+        matchBadge = '<div class="clog-match-badge">' + matchCount + ' match' + (matchCount !== 1 ? 'es' : '') + '</div>';
+      }
       html += '<div class="clog-overview-card' + (isDone ? ' ov-done' : '') + '" onclick="setClogSource(\'' + src.replace(/'/g, "\\'") + '\')">' +
         '<div class="clog-overview-name">' + src + '</div>' +
+        matchBadge +
         '<div class="clog-overview-count">' + got + ' / ' + total + ' items</div>' +
         '<div class="clog-prog-bar" style="height:5px;margin-bottom:4px"><div class="clog-prog-fill" style="width:' + pct + '%;background:' + progColor + '"></div></div>' +
         '<div class="clog-overview-pct">' + pct + '%</div>' +
@@ -3947,11 +3961,9 @@ function setClogCat(cat, el) {
 
 function setClogSource(source) {
   clogState.activeSource = source;
-  // Clear search when entering a source — overview search ≠ item search
-  if (source !== null) {
-    var searchEl = document.getElementById('clog-search');
-    if (searchEl) searchEl.value = '';
-  }
+  // When entering a source from a search, keep the search so items are pre-filtered.
+  // When going back to overview (source=null), also keep search so tiles stay filtered.
+  // Only clear search explicitly via the X or when user types something new.
   // Close mobile sidebar
   var sidebar = document.getElementById('clog-sidebar');
   if (sidebar) sidebar.classList.remove('mob-open');
