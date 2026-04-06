@@ -1176,12 +1176,34 @@ function openDetail(order) {
     } else if (item.location) {
       infoRows.push(['Location', item.location]);
     }
-    infoRows.push(['Kill Count', `<div style="display:flex;align-items:center;gap:0.75rem">
-      <input type="number" min="0" id="kc-input-${item.order}" value="${currentKC}"
-        style="background:var(--stone);border:1px solid var(--stone-lighter);border-radius:3px;color:var(--gold);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;padding:0.3rem 0.6rem;width:90px;outline:none;text-align:center"
-        onchange="updateKC(${item.order}, this.value)" oninput="updateKC(${item.order}, this.value)">
-      <span style="font-size:0.8rem;color:var(--text-muted)">kills logged</span>
-    </div>`]);
+    var pairedModal = PAIRED_BOSSES[item.name];
+    if (pairedModal) {
+      var kcBModal = getPairedKC(item.order);
+      infoRows.push(['Kill Count', `
+        <div style="display:flex;flex-direction:column;gap:0.5rem">
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <span style="font-size:0.75rem;color:var(--text-muted);width:70px">${pairedModal.a}</span>
+            <input type="number" min="0" value="${currentKC}"
+              style="background:var(--stone);border:1px solid var(--stone-lighter);border-radius:3px;color:var(--gold);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;padding:0.3rem 0.6rem;width:90px;outline:none;text-align:center"
+              onchange="updateKC(${item.order}, this.value)" oninput="updateKC(${item.order}, this.value)">
+            <span style="font-size:0.8rem;color:var(--text-muted)">KC</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <span style="font-size:0.75rem;color:var(--text-muted);width:70px">${pairedModal.b}</span>
+            <input type="number" min="0" value="${kcBModal}"
+              style="background:var(--stone);border:1px solid var(--stone-lighter);border-radius:3px;color:var(--gold);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;padding:0.3rem 0.6rem;width:90px;outline:none;text-align:center"
+              onchange="updatePairedKC(${item.order}, this.value)" oninput="updatePairedKC(${item.order}, this.value)">
+            <span style="font-size:0.8rem;color:var(--text-muted)">KC</span>
+          </div>
+        </div>`]);
+    } else {
+      infoRows.push(['Kill Count', `<div style="display:flex;align-items:center;gap:0.75rem">
+        <input type="number" min="0" id="kc-input-${item.order}" value="${currentKC}"
+          style="background:var(--stone);border:1px solid var(--stone-lighter);border-radius:3px;color:var(--gold);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;padding:0.3rem 0.6rem;width:90px;outline:none;text-align:center"
+          onchange="updateKC(${item.order}, this.value)" oninput="updateKC(${item.order}, this.value)">
+        <span style="font-size:0.8rem;color:var(--text-muted)">kills logged</span>
+      </div>`]);
+    }
     if (item.skillReqs) {
       const reqs = parseSkillReqs(item.skillReqs);
       const html = reqs.map(r => {
@@ -1651,6 +1673,28 @@ function toggleDropDone(dropKey, sourceOrder, mainEntryOrder) {
   // Sync to clog
   syncDropToClog(dropName, obtained);
 
+  // Sync to ALL other bosses that have this same drop name
+  // (e.g. Dragon pickaxe appears on KBD, Chaos Ele, Callisto etc.)
+  var dropNameLower = dropName.toLowerCase();
+  if (typeof BOSS_DATA !== 'undefined') {
+    SPINE_DATA.forEach(function(spine) {
+      if (spine.order === sourceOrder) return; // skip the source boss
+      if (spine.type !== 'Boss' && spine.entryType !== 'boss') return;
+      var rich = BOSS_DATA[spine.name];
+      if (!rich || !rich.drops) return;
+      var matchingDrop = rich.drops.find(function(d) {
+        return d.name.toLowerCase() === dropNameLower;
+      });
+      if (!matchingDrop) return;
+      var otherKey = spine.order + '-' + matchingDrop.name;
+      if (obtained) {
+        obtainedDrops[otherKey] = true;
+      } else {
+        delete obtainedDrops[otherKey];
+      }
+    });
+  }
+
   // allDone check — use BOSS_DATA drops if available, fall back to notableDrops
   var item = SPINE_DATA.find(function(d) { return d.order === sourceOrder; });
   if (item) {
@@ -1668,8 +1712,8 @@ function toggleDropDone(dropKey, sourceOrder, mainEntryOrder) {
   saveToStorage();
   renderTable();
   updateProgress();
-  const bossPage = document.getElementById('page-bosses');
-  if (bossPage && bossPage.classList.contains('active')) {
+  var bossGrid = document.getElementById('bt-grid');
+  if (bossGrid) {
     refreshBossCard(sourceOrder);
   } else {
     openDetail(sourceOrder);
@@ -3903,6 +3947,11 @@ function setClogCat(cat, el) {
 
 function setClogSource(source) {
   clogState.activeSource = source;
+  // Clear search when entering a source — overview search ≠ item search
+  if (source !== null) {
+    var searchEl = document.getElementById('clog-search');
+    if (searchEl) searchEl.value = '';
+  }
   // Close mobile sidebar
   var sidebar = document.getElementById('clog-sidebar');
   if (sidebar) sidebar.classList.remove('mob-open');
@@ -4352,6 +4401,32 @@ function getBossRichData(spineItem) {
 
 var btActiveFilter = 'all';
 var btCanKillOnly  = false;
+var btSort = 'az'; // 'az', 'za', 'difficulty-asc', 'difficulty-desc', 'kc-asc', 'kc-desc'
+
+function setBtSort(sort) {
+  btSort = sort;
+  renderBossTracker();
+}
+
+// Paired bosses — show two KC inputs in one card
+// key: spine name, value: {a: label, b: label}
+var PAIRED_BOSSES = {
+  'Venenatis and Spindel':   { a: 'Venenatis', b: 'Spindel' },
+  'Callisto and Artio':      { a: 'Callisto',  b: 'Artio' },
+  "Vet'ion and Calvar'ion":  { a: "Vet'ion",   b: "Calvar'ion" },
+};
+
+function getPairedKC(order) {
+  return bossKC[order + '_b'] || 0;
+}
+function updatePairedKC(order, value) {
+  bossKC[order + '_b'] = Math.max(0, parseInt(value) || 0);
+  saveToStorage();
+  clearTimeout(_kcDebounceTimers[order + '_b']);
+  _kcDebounceTimers[order + '_b'] = setTimeout(function() {
+    refreshBossCard(order);
+  }, 600);
+}
 
 function setBtFilter(filter, el) {
   btActiveFilter = filter;
@@ -4425,6 +4500,26 @@ function renderBossTracker() {
       if (bossCanKill(item) !== true) return false;
     }
     return true;
+  });
+
+  // Sort
+  var tierOrder = { 'easy': 1, 'medium': 2, 'hard': 3, 'elite': 4, 'master': 5, 'grandmaster': 6 };
+  bosses = bosses.slice().sort(function(a, b) {
+    if (btSort === 'az') return a.name.localeCompare(b.name);
+    if (btSort === 'za') return b.name.localeCompare(a.name);
+    if (btSort === 'difficulty-asc') {
+      var ta = tierOrder[(a.bossTier||'').toLowerCase().replace(' tier','').trim()] || 0;
+      var tb = tierOrder[(b.bossTier||'').toLowerCase().replace(' tier','').trim()] || 0;
+      return ta !== tb ? ta - tb : a.name.localeCompare(b.name);
+    }
+    if (btSort === 'difficulty-desc') {
+      var ta2 = tierOrder[(a.bossTier||'').toLowerCase().replace(' tier','').trim()] || 0;
+      var tb2 = tierOrder[(b.bossTier||'').toLowerCase().replace(' tier','').trim()] || 0;
+      return ta2 !== tb2 ? tb2 - ta2 : a.name.localeCompare(b.name);
+    }
+    if (btSort === 'kc-desc') return (bossKC[b.order]||0) - (bossKC[a.order]||0);
+    if (btSort === 'kc-asc')  return (bossKC[a.order]||0) - (bossKC[b.order]||0);
+    return a.order - b.order; // default: spine order
   });
 
   var totalKC   = bosses.reduce(function(s, b) { return s + (bossKC[b.order] || 0); }, 0);
@@ -4563,19 +4658,43 @@ function buildBossCardHtml(boss) {
       '</div>'
     : '';
 
+  // Paired boss KC
+  var paired = PAIRED_BOSSES[boss.name];
+  var kcWrapHtml;
+  if (paired) {
+    var kcB = getPairedKC(boss.order);
+    kcWrapHtml = '<div class="bc-kc-wrap bc-kc-paired" onclick="event.stopPropagation()">' +
+      (milestoneHtml ? '<div class="bc-milestones">' + milestoneHtml + '</div>' : '') +
+      '<div class="bc-kc-pair-row">' +
+        '<span class="bc-kc-pair-label">' + paired.a + '</span>' +
+        '<input class="bc-kc-input" type="number" min="0" value="' + kc + '"' +
+          ' onchange="updateKC(' + boss.order + ', this.value)"' +
+          ' oninput="updateKC(' + boss.order + ', this.value)">' +
+      '</div>' +
+      '<div class="bc-kc-pair-row">' +
+        '<span class="bc-kc-pair-label">' + paired.b + '</span>' +
+        '<input class="bc-kc-input" type="number" min="0" value="' + kcB + '"' +
+          ' onchange="updatePairedKC(' + boss.order + ', this.value)"' +
+          ' oninput="updatePairedKC(' + boss.order + ', this.value)">' +
+      '</div>' +
+    '</div>';
+  } else {
+    kcWrapHtml = '<div class="bc-kc-wrap" onclick="event.stopPropagation()">' +
+      (milestoneHtml ? '<div class="bc-milestones">' + milestoneHtml + '</div>' : '') +
+      '<span class="bc-kc-label">KC</span>' +
+      '<input class="bc-kc-input" type="number" min="0" value="' + kc + '"' +
+        ' onchange="updateKC(' + boss.order + ', this.value)"' +
+        ' oninput="updateKC(' + boss.order + ', this.value)">' +
+    '</div>';
+  }
+
   return '<div class="' + cardClass + '" id="bc-' + boss.order + '" onclick="openDetail(' + boss.order + ')" style="cursor:pointer">' +
     '<div class="bc-header">' +
       imageHtml +
       '<span class="bc-name" title="Open details">' +
         boss.name + (tierHtml ? '&ensp;' + tierHtml : '') +
       '</span>' +
-      '<div class="bc-kc-wrap" onclick="event.stopPropagation()">' +
-        (milestoneHtml ? '<div class="bc-milestones">' + milestoneHtml + '</div>' : '') +
-        '<span class="bc-kc-label">KC</span>' +
-        '<input class="bc-kc-input" type="number" min="0" value="' + kc + '"' +
-          ' onchange="updateKC(' + boss.order + ', this.value)"' +
-          ' oninput="updateKC(' + boss.order + ', this.value)">' +
-      '</div>' +
+      kcWrapHtml +
     '</div>' +
     gphrHtml +
     progressHtml +

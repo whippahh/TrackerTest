@@ -3315,7 +3315,35 @@
   .bc-dry-summary.bc-dry-very-dry { background: rgba(200,64,64,0.12);  color: #c84040; border-left: 2px solid #c84040; }
   .bc-dry-summary strong { font-weight: 600; }
 
-  /* KC milestones */
+  /* Sort select */
+  .bt-sort-select {
+    background: var(--stone);
+    border: 1px solid var(--stone-lighter);
+    border-radius: 3px;
+    color: var(--text-muted);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.4rem;
+    cursor: pointer;
+    outline: none;
+  }
+  .bt-sort-select:hover { border-color: var(--gold-dark); color: var(--text-light); }
+
+  /* Paired boss KC */
+  .bc-kc-paired { flex-direction: column; gap: 2px; align-items: flex-end; }
+  .bc-kc-pair-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .bc-kc-pair-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-family: 'Source Sans 3', sans-serif;
+    white-space: nowrap;
+    text-align: right;
+    min-width: 48px;
+  }
   .bc-milestones { display: flex; gap: 2px; align-items: center; }
   .bc-milestone {
     font-size: 0.58rem;

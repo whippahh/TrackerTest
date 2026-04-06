@@ -3822,14 +3822,13 @@ const SPINE_DATA = [
   {
     "order": 274,
     "name": "God Wars Dungeon bosses (Teams)",
-    "type": "Boss",
+    "type": "Activity/Goal",
     "questPrereqs": "",
     "skillReqs": "Attack 70; Strength 70; Defence 70; Hitpoints 70; Ranged 70; Agility 70",
     "qp": 0,
-    "info": "Medium tier | God Wars Dungeon uniques",
+    "info": "Intro to God Wars Dungeon \u2014 all 4 generals can be done in teams before soloing. Good stepping stone for mid-game uniques.",
     "location": "",
-    "entryType": "boss",
-    "bossTier": "Medium tier",
+    "entryType": "activity",
     "notableDrops": [
       [
         "Bandos chestplate",
@@ -6598,6 +6597,20 @@ const SPINE_DATA = [
   },
   {
     "order": 434,
+    "name": "Shellbane Gryphon",
+    "type": "Boss",
+    "questPrereqs": "Troubled Tortugans",
+    "skillReqs": "Slayer 51; Sailing 45",
+    "qp": 0,
+    "info": "Hard tier | Mid-level Slayer boss on Great Conch. Solo instanced, requires Slayer task. Weak to melee (stab). Bring tortugan shield.",
+    "location": "Great Conch (Sailing)",
+    "entryType": "boss",
+    "bossTier": "Hard tier",
+    "notableDrops": [],
+    "kc": 0
+  },
+  {
+    "order": 435,
     "name": "Tombs of Amascut",
     "type": "Boss",
     "questPrereqs": "Beneath Cursed Sands",
@@ -6640,7 +6653,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 435,
+    "order": 436,
     "name": "Chambers of Xeric",
     "type": "Boss",
     "questPrereqs": "",
@@ -6695,7 +6708,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 436,
+    "order": 437,
     "name": "Nex",
     "type": "Boss",
     "questPrereqs": "",
@@ -6734,7 +6747,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 437,
+    "order": 438,
     "name": "Rigour Prayer",
     "type": "Unlock",
     "questPrereqs": "Chambers of Xeric completion (for scroll)",
@@ -6747,7 +6760,7 @@ const SPINE_DATA = [
     "unlockCategory": "Prayer"
   },
   {
-    "order": 438,
+    "order": 439,
     "name": "Augury Prayer",
     "type": "Unlock",
     "questPrereqs": "Chambers of Xeric completion (for scroll)",
@@ -6760,7 +6773,7 @@ const SPINE_DATA = [
     "unlockCategory": "Prayer"
   },
   {
-    "order": 439,
+    "order": 440,
     "name": "Preserve Prayer",
     "type": "Unlock",
     "questPrereqs": "Chambers of Xeric completion (for scroll)",
@@ -6773,7 +6786,7 @@ const SPINE_DATA = [
     "unlockCategory": "Prayer"
   },
   {
-    "order": 440,
+    "order": 441,
     "name": "Ancestral Robes",
     "type": "Unlock",
     "questPrereqs": "None (CoX for obtaining)",
@@ -6786,7 +6799,7 @@ const SPINE_DATA = [
     "unlockCategory": "Magic Armour"
   },
   {
-    "order": 441,
+    "order": 442,
     "name": "Twisted Bow",
     "type": "Unlock",
     "questPrereqs": "None (CoX \u2014 no hard quest req; recommended 85+ combat stats)",
@@ -6799,7 +6812,7 @@ const SPINE_DATA = [
     "unlockCategory": "Ranged Weapon"
   },
   {
-    "order": 442,
+    "order": 443,
     "name": "Dragon Hunter Lance",
     "type": "Unlock",
     "questPrereqs": "None (CoX for drop; no hard quest req to wield)",
@@ -6812,7 +6825,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Weapon"
   },
   {
-    "order": 443,
+    "order": 444,
     "name": "The Nightmare and Phosani's Nightmare",
     "type": "Boss",
     "questPrereqs": "Priest in Peril",
@@ -6863,7 +6876,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 444,
+    "order": 445,
     "name": "Theatre of Blood",
     "type": "Boss",
     "questPrereqs": "Priest in Peril",
@@ -6910,7 +6923,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 445,
+    "order": 446,
     "name": "Elite Morytania Diary",
     "type": "Diary",
     "questPrereqs": "Desert Treasure I; A Taste of Hope; Theatre of Blood (must complete)",
@@ -6922,7 +6935,7 @@ const SPINE_DATA = [
     "bossTier": ""
   },
   {
-    "order": 446,
+    "order": 447,
     "name": "Ghrazi Rapier",
     "type": "Unlock",
     "questPrereqs": "Priest in Peril (for ToB access)",
@@ -6935,7 +6948,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Weapon"
   },
   {
-    "order": 447,
+    "order": 448,
     "name": "Avernic Defender",
     "type": "Unlock",
     "questPrereqs": "Dragon Defender obtained; Priest in Peril (for ToB)",
@@ -6948,7 +6961,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Off-hand"
   },
   {
-    "order": 448,
+    "order": 449,
     "name": "Scythe of Vitur",
     "type": "Unlock",
     "questPrereqs": "Priest in Peril (for Morytania / ToB access)",
@@ -6961,7 +6974,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Weapon"
   },
   {
-    "order": 449,
+    "order": 450,
     "name": "Inquisitor's Armour + Mace",
     "type": "Unlock",
     "questPrereqs": "None (The Nightmare \u2014 group or solo Phosani's)",
@@ -6974,7 +6987,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Armour / Weapon"
   },
   {
-    "order": 450,
+    "order": 451,
     "name": "Sanguinesti Staff",
     "type": "Unlock",
     "questPrereqs": "Priest in Peril (for ToB access)",
@@ -6987,7 +7000,7 @@ const SPINE_DATA = [
     "unlockCategory": "Magic Weapon"
   },
   {
-    "order": 451,
+    "order": 452,
     "name": "Ring of Endurance",
     "type": "Unlock",
     "questPrereqs": "",
@@ -7000,7 +7013,7 @@ const SPINE_DATA = [
     "unlockCategory": "Agility / QoL Ring"
   },
   {
-    "order": 452,
+    "order": 453,
     "name": "Achievement diary cape",
     "type": "Activity/Goal",
     "questPrereqs": "Easy Ardougne Diary; Easy Karamja Diary; Easy Kandarin Diary; Easy Desert Diary; Easy Falador Diary; Easy Fremennik Diary; Easy Kourend & Kebos Diary; Easy Lumbridge & Draynor Diary; Easy Morytania Diary; Easy Varrock Diary; Easy Western Provinces Diary; Easy Wilderness Diary; Medium Ardougne Diary; Medium Desert Diary; Medium Falador Diary; Medium Fremennik Diary; Medium Kandarin Diary; Medium Kourend & Kebos Diary; Medium Lumbridge & Draynor Diary; Medium Morytania Diary; Medium Varrock Diary; Medium Western Provinces Diary; Medium Karamja Diary; Medium Wilderness Diary; Hard Ardougne Diary; Hard Desert Diary; Hard Falador Diary; Hard Fremennik Diary; Hard Kandarin Diary; Hard Karamja Diary; Hard Kourend & Kebos Diary; Hard Lumbridge & Draynor Diary; Hard Morytania Diary; Hard Varrock Diary; Hard Western Provinces Diary; Hard Wilderness Diary; Elite Ardougne Diary; Elite Desert Diary; Elite Falador Diary; Elite Fremennik Diary; Elite Kandarin Diary; Elite Karamja Diary; Elite Kourend & Kebos Diary; Elite Lumbridge & Draynor Diary; Elite Varrock Diary; Elite Western Provinces Diary; Elite Wilderness Diary; Elite Morytania Diary",
@@ -7012,7 +7025,7 @@ const SPINE_DATA = [
     "bossTier": ""
   },
   {
-    "order": 453,
+    "order": 454,
     "name": "Construction Cape",
     "type": "Unlock",
     "questPrereqs": "",
@@ -7025,7 +7038,7 @@ const SPINE_DATA = [
     "unlockCategory": "Skillcape Teleport"
   },
   {
-    "order": 454,
+    "order": 455,
     "name": "Base 90",
     "type": "Activity/Goal",
     "questPrereqs": "",
@@ -7037,7 +7050,7 @@ const SPINE_DATA = [
     "bossTier": ""
   },
   {
-    "order": 455,
+    "order": 456,
     "name": "Amulet of Blood Fury",
     "type": "Unlock",
     "questPrereqs": "Sins of the Father (for Darkmeyer / Vyrewatch access)",
@@ -7050,7 +7063,7 @@ const SPINE_DATA = [
     "unlockCategory": "Combat Amulet"
   },
   {
-    "order": 456,
+    "order": 457,
     "name": "Sol Heredit",
     "type": "Boss",
     "questPrereqs": "Children of the Sun",
@@ -7077,7 +7090,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 457,
+    "order": 458,
     "name": "Blade of Saeldor",
     "type": "Unlock",
     "questPrereqs": "Song of the Elves (for Gauntlet access)",
@@ -7090,7 +7103,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Weapon"
   },
   {
-    "order": 458,
+    "order": 459,
     "name": "Bow of Faerdhinen",
     "type": "Unlock",
     "questPrereqs": "Song of the Elves (for Gauntlet access)",
@@ -7103,7 +7116,7 @@ const SPINE_DATA = [
     "unlockCategory": "Ranged Weapon"
   },
   {
-    "order": 459,
+    "order": 460,
     "name": "Yama",
     "type": "Boss",
     "questPrereqs": "A Kingdom Divided",
@@ -7134,7 +7147,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 460,
+    "order": 461,
     "name": "TzKal-Zuk",
     "type": "Boss",
     "questPrereqs": "",
@@ -7157,7 +7170,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 461,
+    "order": 462,
     "name": "Tumeken's Shadow",
     "type": "Unlock",
     "questPrereqs": "Beneath Cursed Sands (for ToA access)",
@@ -7170,7 +7183,7 @@ const SPINE_DATA = [
     "unlockCategory": "Magic Weapon"
   },
   {
-    "order": 462,
+    "order": 463,
     "name": "Masori Armour Set",
     "type": "Unlock",
     "questPrereqs": "Beneath Cursed Sands (for ToA)",
@@ -7183,7 +7196,7 @@ const SPINE_DATA = [
     "unlockCategory": "Ranged Armour"
   },
   {
-    "order": 463,
+    "order": 464,
     "name": "Osmumten's Fang",
     "type": "Unlock",
     "questPrereqs": "Beneath Cursed Sands (for ToA)",
@@ -7196,7 +7209,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Weapon"
   },
   {
-    "order": 464,
+    "order": 465,
     "name": "Lightbearer",
     "type": "Unlock",
     "questPrereqs": "Beneath Cursed Sands (for ToA)",
@@ -7209,7 +7222,7 @@ const SPINE_DATA = [
     "unlockCategory": "Ring"
   },
   {
-    "order": 465,
+    "order": 466,
     "name": "Challenge Mode Chambers of Xeric",
     "type": "Boss",
     "questPrereqs": "",
@@ -7232,7 +7245,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 466,
+    "order": 467,
     "name": "Infernal Cape",
     "type": "Unlock",
     "questPrereqs": "",
@@ -7245,7 +7258,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Cape"
   },
   {
-    "order": 467,
+    "order": 468,
     "name": "Torva Armour Set",
     "type": "Unlock",
     "questPrereqs": "None (Nex \u2014 Ancient Prison in GWD; 90+ combat recommended)",
@@ -7258,7 +7271,7 @@ const SPINE_DATA = [
     "unlockCategory": "Melee Armour"
   },
   {
-    "order": 468,
+    "order": 469,
     "name": "Tombs of Amascut (500+ Raid level)",
     "type": "Boss",
     "questPrereqs": "",
@@ -7301,7 +7314,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 469,
+    "order": 470,
     "name": "Hard Mode Theatre of Blood",
     "type": "Boss",
     "questPrereqs": "Priest in Peril",
@@ -7328,7 +7341,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 470,
+    "order": 471,
     "name": "Yama's Contracts",
     "type": "Boss",
     "questPrereqs": "A Kingdom Divided",
@@ -7347,7 +7360,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 471,
+    "order": 472,
     "name": "Crystalline Portal Nexus (Tier 3)",
     "type": "Unlock",
     "questPrereqs": "Various quests/Magic levels required for individual teleport destinations",
@@ -7360,7 +7373,7 @@ const SPINE_DATA = [
     "unlockCategory": "POH \u2014 Teleport Hub"
   },
   {
-    "order": 472,
+    "order": 473,
     "name": "Awakened Desert Treasure II Bosses",
     "type": "Boss",
     "questPrereqs": "Desert Treasure II - The Fallen Empire",
@@ -7379,7 +7392,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 473,
+    "order": 474,
     "name": "Elysian Spirit Shield",
     "type": "Unlock",
     "questPrereqs": "None (Corp Beast \u2014 90+ combat stats strongly recommended)",
@@ -7392,7 +7405,7 @@ const SPINE_DATA = [
     "unlockCategory": "Shield"
   },
   {
-    "order": 474,
+    "order": 475,
     "name": "Bonecrusher Necklace",
     "type": "Unlock",
     "questPrereqs": "Hard Morytania Diary (Bonecrusher); Dragon Slayer II (Vorkath for Dragonbone Necklace)",
@@ -7405,7 +7418,7 @@ const SPINE_DATA = [
     "unlockCategory": "Prayer QOL"
   },
   {
-    "order": 475,
+    "order": 476,
     "name": "Max cape",
     "type": "Activity/Goal",
     "questPrereqs": "",
@@ -7417,7 +7430,7 @@ const SPINE_DATA = [
     "bossTier": ""
   },
   {
-    "order": 476,
+    "order": 477,
     "name": "Grandmaster Combat Achievements",
     "type": "Boss",
     "questPrereqs": "",
@@ -7440,7 +7453,7 @@ const SPINE_DATA = [
     "kc": 0
   },
   {
-    "order": 477,
+    "order": 478,
     "name": "Collection log completion",
     "type": "Activity/Goal",
     "questPrereqs": "",

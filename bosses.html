@@ -55,6 +55,14 @@
       <button class="chip" data-btfilter="master"        onclick="setBtFilter('master',this)">Master</button>
       <button class="chip" data-btfilter="grandmaster"   onclick="setBtFilter('grandmaster',this)">GM</button>
       <button class="chip chip-cankill" id="bt-cankill" onclick="toggleBtCanKill(this)" title="Only show bosses you currently meet the requirements for">⚔ Can Kill</button>
+      <select class="bt-sort-select" onchange="setBtSort(this.value)" title="Sort bosses">
+        <option value="az">A → Z</option>
+        <option value="za">Z → A</option>
+        <option value="difficulty-asc">Easiest first</option>
+        <option value="difficulty-desc">Hardest first</option>
+        <option value="kc-desc">Most KC</option>
+        <option value="kc-asc">Least KC</option>
+      </select>
       <span class="bt-summary" id="bt-summary"></span>
       <button class="bt-rotation-btn" id="bt-rotation-btn" onclick="toggleRotationPanel(this)" title="Open boss rotation suggester">⚙ Rotation</button>
     </div>
