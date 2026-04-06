@@ -3457,29 +3457,41 @@
     font-size: 1rem;
   }
 
-  /* ── Boss page two-column layout ── */
-  .bt-main-layout {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-  .bt-main-layout .boss-cards-grid { flex: 1; min-width: 0; }
-  .bt-main-layout.bt-has-sidebar .boss-cards-grid {
-    /* Shrink grid when sidebar is open */
-  }
+  /* ── Boss page layout ── */
+  .bt-main-layout { position: relative; }
 
-  /* ── Rotation Sidebar ── */
+  /* Rotation button — distinct from filter chips */
+  .bt-rotation-btn {
+    margin-left: auto;
+    background: rgba(122,96,48,0.15);
+    border: 1px solid rgba(122,96,48,0.4);
+    border-radius: 4px;
+    color: var(--gold-dark);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .bt-rotation-btn:hover { background: rgba(122,96,48,0.25); border-color: var(--gold-dark); }
+  .bt-rotation-btn.active { background: rgba(122,96,48,0.3); border-color: var(--gold-dark); color: var(--gold-light); }
+
+  /* ── Rotation Sidebar — fixed panel, floats over grid ── */
   .bt-rotation-sidebar {
+    position: fixed;
+    top: 80px;
+    right: 1rem;
     width: 300px;
-    flex-shrink: 0;
     flex-direction: column;
     background: var(--stone-mid);
-    border: 1px solid rgba(122,96,48,0.25);
+    border: 1px solid rgba(122,96,48,0.35);
     border-radius: 6px;
     overflow: hidden;
-    position: sticky;
-    top: 80px;
     max-height: calc(100vh - 100px);
+    z-index: 200;
+    box-shadow: -4px 4px 20px rgba(0,0,0,0.4);
   }
   .bt-rotation-sidebar-header {
     display: flex;

@@ -1370,13 +1370,43 @@ var _kcDebounceTimers = {};
 function updateKC(order, value) {
   bossKC[order] = Math.max(0, parseInt(value) || 0);
   saveToStorage();
-  // Debounce card refresh — only re-render 600ms after the user stops typing
-  // so focus isn't lost mid-entry
+  // Update in-place what we can without destroying the input
+  var kc = bossKC[order];
+  var card = document.getElementById('bc-' + order);
+  if (card) {
+    // GP/hr pill
+    var rich = getBossRichData(SPINE_DATA.find(function(d){ return d.order === order; }) || {});
+    var gphr = calcBossGpHr(rich);
+    var gphrEl = card.querySelector('.bc-gphr');
+    if (gphrEl) {
+      if (gphr) { gphrEl.className = 'bc-gphr'; gphrEl.textContent = '~' + fmtGpHr(gphr); }
+      else if (rich.killsPerHour) { gphrEl.className = 'bc-gphr bc-gphr-muted'; gphrEl.textContent = '~' + rich.killsPerHour + ' kills/hr'; }
+    }
+    // Milestones
+    var milestonesEl = card.querySelector('.bc-milestones');
+    if (milestonesEl) {
+      var MILESTONES = [100, 500, 1000, 5000];
+      milestonesEl.innerHTML = MILESTONES.filter(function(m){ return kc >= m; }).map(function(m){
+        return '<span class="bc-milestone">' + (m >= 1000 ? (m/1000)+'K' : m) + '</span>';
+      }).join('');
+    }
+    // Pet row
+    var petEl = card.querySelector('.bc-pet-row');
+    if (petEl && rich.petRate) {
+      var petRate = parseDropRate(rich.petRate);
+      if (petRate && kc > 0) {
+        var petProb = Math.round(dropProbability(petRate, kc) * 100);
+        var petPctEl = petEl.querySelector('.bc-pet-pct');
+        if (petPctEl) petPctEl.textContent = petProb + '%';
+      }
+    }
+  }
+  // Full re-render after user stops typing (for dry tracker etc)
   clearTimeout(_kcDebounceTimers[order]);
   _kcDebounceTimers[order] = setTimeout(function() {
     refreshBossCard(order);
     if (btRotationOpen) renderRotation();
-  }, 600);
+  }, 1200);
 }
 
 // ============================================================
@@ -4568,10 +4598,8 @@ var btRotationOpen = false;
 function toggleRotationPanel(btnEl) {
   btRotationOpen = !btRotationOpen;
   var sidebar = document.getElementById('bt-rotation-sidebar');
-  var layout  = document.getElementById('bt-main-layout');
   var btn     = btnEl || document.getElementById('bt-rotation-btn');
   if (sidebar) sidebar.style.display = btRotationOpen ? 'flex' : 'none';
-  if (layout)  layout.classList.toggle('bt-has-sidebar', btRotationOpen);
   if (btn)     btn.classList.toggle('active', btRotationOpen);
   if (btRotationOpen) renderRotation();
 }

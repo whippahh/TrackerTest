@@ -55,14 +55,14 @@
       <button class="chip" data-btfilter="master"        onclick="setBtFilter('master',this)">Master</button>
       <button class="chip" data-btfilter="grandmaster"   onclick="setBtFilter('grandmaster',this)">GM</button>
       <button class="chip chip-cankill" id="bt-cankill" onclick="toggleBtCanKill(this)" title="Only show bosses you currently meet the requirements for">⚔ Can Kill</button>
-      <button class="chip chip-cankill" id="bt-rotation-btn" onclick="toggleRotationPanel(this)" title="Open boss rotation suggester">⚙ Rotation</button>
       <span class="bt-summary" id="bt-summary"></span>
+      <button class="bt-rotation-btn" id="bt-rotation-btn" onclick="toggleRotationPanel(this)" title="Open boss rotation suggester">⚙ Rotation</button>
     </div>
 
     <div class="bt-main-layout" id="bt-main-layout">
       <div class="boss-cards-grid" id="bt-grid"></div>
 
-      <!-- Boss Rotation Sidebar -->
+      <!-- Boss Rotation Sidebar — floats over the grid -->
       <div class="bt-rotation-sidebar" id="bt-rotation-sidebar" style="display:none">
         <div class="bt-rotation-sidebar-header">
           <span>⚔ Rotation Suggester</span>
