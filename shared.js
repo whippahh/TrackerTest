@@ -1140,8 +1140,8 @@ function openDetail(order) {
       if (richModal.weakness)    infoRows.push(['Weakness', richModal.weakness]);
       if (richModal.combatLevel) infoRows.push(['Combat Level', richModal.combatLevel]);
       if (richModal.killsPerHour) infoRows.push(['Kills / hr', '~' + richModal.killsPerHour + ' (avg)']);
-      var gphrModal = calcBossGpHr(richModal);
-      if (gphrModal) infoRows.push(['Est. GP/hr', '<span style="color:var(--gold-dark);font-weight:600">' + fmtGpHr(gphrModal) + '</span> <span style="font-size:0.72rem;color:var(--text-muted)">(unique drops only)</span>']);
+      var wikiName = item.name.replace(/ /g, '_');
+      infoRows.push(['Wiki', '<a href="https://oldschool.runescape.wiki/w/' + encodeURIComponent(wikiName) + '" target="_blank" style="color:var(--gold-light)">View on OSRS Wiki ↗</a>']);
       if (richModal.petName) {
         var petRateModal = parseDropRate(richModal.petRate);
         if (petRateModal && currentKC > 0) {
@@ -1341,11 +1341,21 @@ function openDetail(order) {
 
   const done = completedSet.has(item.order);
   document.getElementById('detail-actions').innerHTML = `
-    <button class="btn" onclick="toggleDone(${item.order}); closeDetailBtn()">${done ? '✗ Mark Incomplete' : '✓ Mark Complete'}</button>
-    <button class="btn btn-ghost" onclick="buildPathTo(${item.order})" title="Recursively find all incomplete prerequisites and add them to Custom Path" style="border-color:#4a7fc8;color:#8abcf8">🗺 Build Path</button>
-    <button class="btn btn-ghost" onclick="showDownstreamTree(${item.order})" title="See what completing this opens up" style="border-color:rgba(200,168,75,0.35);color:var(--gold-dark)">⚔ Opens The Way</button>
-    ${isBoss ? `<button class="btn btn-ghost" onclick="generateBossCard(${item.order})" title="Download shareable progress card" style="border-color:rgba(180,140,60,0.35);color:var(--gold-dark)">📤 Share Card</button>` : ''}
-    ${item.source ? `<a href="${item.source}" target="_blank"><button class="btn btn-ghost">Open Guide ↗</button></a>` : ''}
+    <div class="detail-actions-row">
+      <button class="detail-action-btn detail-action-primary" onclick="toggleDone(${item.order}); closeDetailBtn()">
+        ${done ? '✗ Mark Incomplete' : '✓ Mark Complete'}
+      </button>
+    </div>
+    <div class="detail-actions-row detail-actions-secondary">
+      <button class="detail-action-btn detail-action-ghost" onclick="buildPathTo(${item.order})" title="Find all incomplete prerequisites and add to Custom Path">
+        🗺 Build Path
+      </button>
+      <button class="detail-action-btn detail-action-ghost" onclick="showDownstreamTree(${item.order})" title="See what completing this unlocks">
+        ⚔ What This Unlocks
+      </button>
+      ${isBoss ? `<button class="detail-action-btn detail-action-ghost" onclick="generateBossCard(${item.order})" title="Download shareable progress image">📤 Share</button>` : ''}
+      ${item.source ? `<a href="${item.source}" target="_blank" style="text-decoration:none"><button class="detail-action-btn detail-action-ghost">Guide ↗</button></a>` : ''}
+    </div>
   `;
   document.getElementById('detail-overlay').classList.add('open');
 }
@@ -1366,14 +1376,9 @@ function updateKC(order, value) {
   var kc = bossKC[order];
   var card = document.getElementById('bc-' + order);
   if (card) {
-    // GP/hr pill
-    var rich = getBossRichData(SPINE_DATA.find(function(d){ return d.order === order; }) || {});
-    var gphr = calcBossGpHr(rich);
-    var gphrEl = card.querySelector('.bc-gphr');
-    if (gphrEl) {
-      if (gphr) { gphrEl.className = 'bc-gphr'; gphrEl.textContent = '~' + fmtGpHr(gphr); }
-      else if (rich.killsPerHour) { gphrEl.className = 'bc-gphr bc-gphr-muted'; gphrEl.textContent = '~' + rich.killsPerHour + ' kills/hr'; }
-    }
+    var kc = bossKC[order];
+    var spine = SPINE_DATA.find(function(d){ return d.order === order; });
+    var rich = spine ? getBossRichData(spine) : null;
     // Milestones
     var milestonesEl = card.querySelector('.bc-milestones');
     if (milestonesEl) {
@@ -1383,13 +1388,12 @@ function updateKC(order, value) {
       }).join('');
     }
     // Pet row
-    var petEl = card.querySelector('.bc-pet-row');
-    if (petEl && rich.petRate) {
+    if (rich && rich.petRate) {
+      var petEl = card.querySelector('.bc-pet-row');
       var petRate = parseDropRate(rich.petRate);
-      if (petRate && kc > 0) {
-        var petProb = Math.round(dropProbability(petRate, kc) * 100);
+      if (petEl && petRate && kc > 0) {
         var petPctEl = petEl.querySelector('.bc-pet-pct');
-        if (petPctEl) petPctEl.textContent = petProb + '%';
+        if (petPctEl) petPctEl.textContent = Math.round(dropProbability(petRate, kc) * 100) + '%';
       }
     }
   }
@@ -4442,12 +4446,9 @@ function buildBossCardHtml(boss) {
 
   var cardClass = 'boss-card' + (allDone ? ' bc-all-done' : '');
 
-  // GP/hr estimate — show value when prices loaded, or kph only as fallback
-  var gphr = calcBossGpHr(rich);
+  // Kills/hr and wiki link — no GP/hr estimate (too complex per boss mechanic)
   var gphrHtml = '';
-  if (gphr) {
-    gphrHtml = '<div class="bc-gphr">~' + fmtGpHr(gphr) + '</div>';
-  } else if (rich.killsPerHour) {
+  if (rich.killsPerHour) {
     gphrHtml = '<div class="bc-gphr bc-gphr-muted">~' + rich.killsPerHour + ' kills/hr</div>';
   }
 
